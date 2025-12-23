@@ -1,12 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Fan Predictions | WC2026 Hub</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+   <body>
 
     <nav style="background:#0b5ed7; padding:15px;">
         <a href="index.html" style="color:white; margin-right:20px; text-decoration:none;">Home</a>
@@ -20,8 +15,7 @@
         <h1>Fan Predictions – World Cup 2026</h1>
 
         <p>
-            Predict just like a fan! Choose your expected group qualifiers.
-            These predictions are for fun and fan engagement only.
+            Predict the top 2 teams in each group! All predictions are for fun and fan engagement only.
         </p>
 
         <form id="predictionForm">
@@ -29,27 +23,10 @@
             <label>Your Name:</label><br>
             <input type="text" id="username" required><br><br>
 
-            <h3>Group A – Top 2 Teams</h3>
+            <!-- Groups A to L -->
+            <div id="groups"></div>
 
-            <label>1st Place:</label><br>
-            <select id="groupA1" required>
-                <option value="">-- Select Team --</option>
-                <option>Argentina</option>
-                <option>France</option>
-                <option>Brazil</option>
-                <option>Germany</option>
-            </select><br><br>
-
-            <label>2nd Place:</label><br>
-            <select id="groupA2" required>
-                <option value="">-- Select Team --</option>
-                <option>Argentina</option>
-                <option>France</option>
-                <option>Brazil</option>
-                <option>Germany</option>
-            </select><br><br>
-
-            <button type="submit">Submit Prediction</button>
+            <button type="submit">Submit All Predictions</button>
 
         </form>
 
@@ -58,26 +35,66 @@
     </div>
 
     <script>
-        document.getElementById("predictionForm").addEventListener("submit", function(e) {
+        const groupsData = {
+            "Group A": ["Argentina","France","Brazil","Germany"],
+            "Group B": ["Spain","Portugal","Netherlands","Belgium"],
+            "Group C": ["England","Croatia","Italy","Switzerland"],
+            "Group D": ["Uruguay","Denmark","Mexico","USA"],
+            "Group E": ["Senegal","Cameroon","Morocco","Tunisia"],
+            "Group F": ["Japan","South Korea","Australia","Iran"],
+            "Group G": ["Canada","Costa Rica","Ecuador","Chile"],
+            "Group H": ["Nigeria","Ghana","Egypt","Algeria"],
+            "Group I": ["Poland","Sweden","Serbia","Ukraine"],
+            "Group J": ["Colombia","Peru","Venezuela","Paraguay"],
+            "Group K": ["Saudi Arabia","Qatar","Iraq","Kuwait"],
+            "Group L": ["New Zealand","Fiji","Tahiti","Solomon Islands"]
+        };
+
+        const groupsDiv = document.getElementById("groups");
+
+        for (let group in groupsData) {
+            let teams = groupsData[group];
+            let groupHTML = `<h3>${group} – Top 2 Teams</h3>`;
+            groupHTML += `<label>1st Place:</label><br><select class="first" required><option value="">-- Select Team --</option>`;
+            teams.forEach(team => groupHTML += `<option>${team}</option>`);
+            groupHTML += `</select><br><br>`;
+            groupHTML += `<label>2nd Place:</label><br><select class="second" required><option value="">-- Select Team --</option>`;
+            teams.forEach(team => groupHTML += `<option>${team}</option>`);
+            groupHTML += `</select><br><br>`;
+            groupsDiv.innerHTML += groupHTML;
+        }
+
+        document.getElementById("predictionForm").addEventListener("submit", function(e){
             e.preventDefault();
-
             const name = document.getElementById("username").value;
-            const team1 = document.getElementById("groupA1").value;
-            const team2 = document.getElementById("groupA2").value;
+            const firsts = document.querySelectorAll(".first");
+            const seconds = document.querySelectorAll(".second");
+            const predictions = {};
 
-            if (team1 === team2) {
-                alert("Please choose two different teams.");
-                return;
+            for(let i=0; i<firsts.length; i++){
+                const groupName = Object.keys(groupsData)[i];
+                const team1 = firsts[i].value;
+                const team2 = seconds[i].value;
+
+                if(team1 === "" || team2 === ""){
+                    alert(`Please select both teams for ${groupName}`);
+                    return;
+                }
+                if(team1 === team2){
+                    alert(`Please choose two different teams for ${groupName}`);
+                    return;
+                }
+
+                predictions[groupName] = [team1, team2];
             }
 
             localStorage.setItem("fanName", name);
-            localStorage.setItem("groupA", team1 + ", " + team2);
+            localStorage.setItem("predictions", JSON.stringify(predictions));
 
-            document.getElementById("result").innerText =
-                "Thanks " + name + "! Your Group A prediction has been saved.";
+            document.getElementById("result").innerText = 
+                `Thanks ${name}! All your group stage predictions have been saved.`;
         });
     </script>
-    <!-- redeploy -->
 
 </body>
-</html>
+
