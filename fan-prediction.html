@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fan Predictions | WC2026 Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav style="background:#0b5ed7; padding:15px;">
+        <a href="index.html" style="color:white; margin-right:20px; text-decoration:none;">Home</a>
+        <a href="predictions.html" style="color:white; margin-right:20px; text-decoration:none;">Predictions</a>
+        <a href="fan-prediction.html" style="color:white; margin-right:20px; text-decoration:none;">Fan Picks</a>
+        <a href="contact.html" style="color:white; text-decoration:none;">Contact</a>
+    </nav>
+
+    <div class="container">
+
+        <h1>Fan Predictions – World Cup 2026</h1>
+
+        <p>
+            Predict just like a fan! Choose your expected group qualifiers.
+            These predictions are for fun and fan engagement only.
+        </p>
+
+        <form id="predictionForm">
+
+            <label>Your Name:</label><br>
+            <input type="text" id="username" required><br><br>
+
+            <h3>Group A – Top 2 Teams</h3>
+
+            <label>1st Place:</label><br>
+            <select id="groupA1" required>
+                <option value="">-- Select Team --</option>
+                <option>Argentina</option>
+                <option>France</option>
+                <option>Brazil</option>
+                <option>Germany</option>
+            </select><br><br>
+
+            <label>2nd Place:</label><br>
+            <select id="groupA2" required>
+                <option value="">-- Select Team --</option>
+                <option>Argentina</option>
+                <option>France</option>
+                <option>Brazil</option>
+                <option>Germany</option>
+            </select><br><br>
+
+            <button type="submit">Submit Prediction</button>
+
+        </form>
+
+        <p id="result" style="margin-top:20px; font-weight:bold;"></p>
+
+    </div>
+
+    <script>
+        document.getElementById("predictionForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById("username").value;
+            const team1 = document.getElementById("groupA1").value;
+            const team2 = document.getElementById("groupA2").value;
+
+            if (team1 === team2) {
+                alert("Please choose two different teams.");
+                return;
+            }
+
+            localStorage.setItem("fanName", name);
+            localStorage.setItem("groupA", team1 + ", " + team2);
+
+            document.getElementById("result").innerText =
+                "Thanks " + name + "! Your Group A prediction has been saved.";
+        });
+    </script>
+
+</body>
+</html>
