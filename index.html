@@ -21,17 +21,49 @@
             color: #ffffff;
         }
 
+        /* NAVBAR */
+        nav {
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            background: rgba(11, 11, 11, 0.95);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #00ff99;
+        }
+
+        .nav-links a {
+            margin-left: 30px;
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #00ff99;
+        }
+
+        /* HERO */
         .hero {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 20px;
+            padding: 100px 20px 20px;
         }
 
         .hero-content {
-            max-width: 700px;
+            max-width: 750px;
         }
 
         .hero h1 {
@@ -44,7 +76,7 @@
         .hero p {
             font-size: 1.1rem;
             color: #cccccc;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .cta-btn {
@@ -64,6 +96,31 @@
             box-shadow: 0 0 20px #00ff99;
         }
 
+        /* COUNTDOWN */
+        .countdown {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            gap: 20px;
+        }
+
+        .time-box {
+            background: #111;
+            padding: 15px 20px;
+            border-radius: 12px;
+            min-width: 90px;
+        }
+
+        .time-box h2 {
+            font-size: 1.8rem;
+            color: #00ff99;
+        }
+
+        .time-box span {
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
         .tagline {
             margin-top: 25px;
             font-size: 0.85rem;
@@ -73,17 +130,70 @@
 </head>
 <body>
 
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="logo">WC26 PREDICT</div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Predict</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
     <section class="hero">
         <div class="hero-content">
             <h1>Predict the Road to Glory<br>FIFA World Cup 2026</h1>
             <p>
                 From group stage upsets to the final whistle —  
-                let football fans decide who lifts the trophy.
+                football fans decide the champion.
             </p>
+
             <button class="cta-btn">Start Predicting</button>
+
+            <!-- COUNTDOWN -->
+            <div class="countdown">
+                <div class="time-box">
+                    <h2 id="days">00</h2>
+                    <span>DAYS</span>
+                </div>
+                <div class="time-box">
+                    <h2 id="hours">00</h2>
+                    <span>HOURS</span>
+                </div>
+                <div class="time-box">
+                    <h2 id="minutes">00</h2>
+                    <span>MINUTES</span>
+                </div>
+                <div class="time-box">
+                    <h2 id="seconds">00</h2>
+                    <span>SECONDS</span>
+                </div>
+            </div>
+
             <div class="tagline">Fan-based predictions • No betting involved</div>
         </div>
     </section>
 
+    <!-- COUNTDOWN SCRIPT -->
+    <script>
+        const wcDate = new Date("June 11, 2026 00:00:00").getTime();
+
+        setInterval(() => {
+            const now = new Date().getTime();
+            const diff = wcDate - now;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById("days").innerText = days;
+            document.getElementById("hours").innerText = hours;
+            document.getElementById("minutes").innerText = minutes;
+            document.getElementById("seconds").innerText = seconds;
+        }, 1000);
+    </script>
+
 </body>
 </html>
+
