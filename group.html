@@ -8,42 +8,38 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
 body{background:#0b0b0b;color:#fff;}
-nav{padding:20px 60px;background:#0b0b0b;position:sticky;top:0;z-index:10;}
-.logo{color:#00ff99;font-size:1.3rem;font-weight:700;}
-.progress{text-align:center;margin:30px 0;font-weight:600;}
-.progress span{color:#00ff99;}
-.group{max-width:1100px;margin:50px auto;padding:0 30px;}
-.group h2{margin-bottom:20px;}
-.teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;}
-.team{background:#111;padding:22px;border-radius:18px;text-align:center;cursor:pointer;position:relative;border:2px solid transparent;transition:0.3s;}
-.team:hover{transform:translateY(-6px);}
-.rank{position:absolute;top:12px;right:12px;padding:5px 10px;border-radius:20px;font-size:0.7rem;font-weight:600;}
-.first{border-color:#ffd700;box-shadow:0 0 15px #ffd700;}
+.logo{font-size:1.5rem;text-align:center;margin:20px 0;color:#00ff99;font-weight:700;}
+.group-container{max-width:1200px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:25px;}
+.group{background:#111;padding:20px;border-radius:20px;}
+.group h2{color:#00ff99;margin-bottom:15px;text-align:center;}
+.team{background:#222;padding:12px;border-radius:15px;margin:8px 0;text-align:center;cursor:pointer;position:relative;transition:0.3s;border:2px solid transparent;}
+.team:hover{transform:translateY(-4px);}
+.rank{position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:15px;font-size:0.7rem;font-weight:600;}
+.first{border-color:#ffd700;box-shadow:0 0 10px #ffd700;}
 .first .rank{background:#ffd700;color:#000;}
-.second{border-color:#c0c0c0;box-shadow:0 0 15px #c0c0c0;}
+.second{border-color:#c0c0c0;box-shadow:0 0 10px #c0c0c0;}
 .second .rank{background:#c0c0c0;color:#000;}
-.third{border-color:#cd7f32;box-shadow:0 0 15px #cd7f32;}
+.third{border-color:#cd7f32;box-shadow:0 0 10px #cd7f32;}
 .third .rank{background:#cd7f32;color:#000;}
 .third.disabled{opacity:0.5;pointer-events:none;}
-.next-btn{display:block;margin:60px auto;padding:16px 45px;font-size:1rem;font-weight:600;background:#00ff99;color:#000;border:none;border-radius:40px;opacity:0.4;cursor:not-allowed;transition:0.3s;}
-.next-btn.active{opacity:1;cursor:pointer;box-shadow:0 0 20px #00ff99;}
+#nextBtn{display:block;margin:40px auto;padding:16px 50px;font-size:1rem;font-weight:600;background:#00ff99;color:#000;border:none;border-radius:40px;opacity:0.4;cursor:not-allowed;transition:0.3s;}
+#nextBtn.active{opacity:1;cursor:pointer;box-shadow:0 0 20px #00ff99;}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="logo">WC26 PREDICT</div>
-</nav>
-<div class="progress"><span>STEP 1 OF 6</span> – Group Stage (Pick 1st, 2nd & 3rd)</div>
-<div id="groups"></div>
+<div class="logo">WC 2026 GROUP STAGE</div>
+
+<div class="group-container" id="groups"></div>
 
 <!-- NEXT BUTTON -->
-<button id="nextBtn" class="next-btn" onclick="window.location.href='round32.html'">Proceed to Round of 32</button>
+<button id="nextBtn" class="next-btn" onclick="window.location.href='round32.html'" disabled>Proceed to Round of 32</button>
 
 <script>
-const groupData={
-A:["Mexico","South Africa","Korea Republic","CZE/DEN/IRN/MKD"],
-B:["Canada","BIH/ITA/NIR/WAL","Qatar","Switzerland"],
+// Group teams
+const groupData = {
+A:["Mexico","South Africa","Korea Republic","Czech/Den/Iran/MKD"],
+B:["Canada","BiH/Italy/NIR/WAL","Qatar","Switzerland"],
 C:["Brazil","Morocco","Haiti","Scotland"],
 D:["USA","Paraguay","Australia","KOS/BUL/SVK/TUR"],
 E:["Germany","Curacao","Côte d’Ivoire","Ecuador"],
@@ -56,4 +52,100 @@ K:["Portugal","COD/JAM/NCL","Uzbekistan","Colombia"],
 L:["England","Croatia","Ghana","Panama"]
 };
 
-con
+const container=document.getElementById("groups");
+let thirdPlaceSelections=[];
+
+// Create group cards
+Object.entries(groupData).forEach(([group,teams])=>{
+  const section=document.createElement("div");
+  section.className="group";
+  section.dataset.complete=false;
+  section.innerHTML=`<h2>Group ${group}</h2>`;
+  
+  teams.forEach(team=>{
+    const card=document.createElement("div");
+    card.className="team";
+    card.innerHTML=`<div>${team}</div>`;
+    card.onclick=()=>selectTeam(card,section);
+    section.appendChild(card);
+  });
+
+  container.appendChild(section);
+});
+
+// Selection logic
+function selectTeam(card,section){
+  const teams = Array.from(section.querySelectorAll(".team"));
+  let first = teams.find(t=>t.classList.contains("first"));
+  let second = teams.find(t=>t.classList.contains("second"));
+  let third = teams.find(t=>t.classList.contains("third"));
+
+  if(!first){
+    assign(card,"first","1st");
+  } else if(!second && card!==first){
+    assign(card,"second","2nd");
+  } else if(!third && card!==first && card!==second){
+    if(thirdPlaceSelections.length < 8){
+      assign(card,"third","3rd");
+      thirdPlaceSelections.push(card);
+      updateThirdDisabled();
+    } else {
+      alert("Only 8 third-place teams can be selected across all groups.");
+    }
+  } else {
+    reset(card);
+  }
+
+  section.dataset.complete=teams.filter(t=>t.classList.contains("first")||t.classList.contains("second")||t.classList.contains("third")).length===3;
+  checkNextButton();
+}
+
+// Assign rank
+function assign(card,rank,label){
+  ["first","second","third"].forEach(r=>card.classList.remove(r));
+  card.classList.add(rank);
+  const badge = document.createElement("div");
+  badge.className="rank";
+  badge.innerText=label;
+  card.appendChild(badge);
+}
+
+// Reset rank
+function reset(card){
+  if(card.classList.contains("third")){
+    const index = thirdPlaceSelections.indexOf(card);
+    if(index > -1) thirdPlaceSelections.splice(index,1);
+    updateThirdDisabled();
+  }
+  card.className="team";
+  const badge = card.querySelector(".rank");
+  if(badge) badge.remove();
+}
+
+// Disable extra third place selections
+function updateThirdDisabled(){
+  document.querySelectorAll(".team.third").forEach(t=>t.classList.remove("disabled"));
+  if(thirdPlaceSelections.length>=8){
+    document.querySelectorAll(".team:not(.first):not(.second):not(.third)").forEach(t=>t.classList.add("disabled"));
+  }
+}
+
+// Check if Next button should be active
+function checkNextButton(){
+  const allGroupsComplete = Array.from(document.querySelectorAll(".group")).every(g=>{
+    const teams = Array.from(g.querySelectorAll(".team"));
+    return teams.filter(t=>t.classList.contains("first")||t.classList.contains("second")||t.classList.contains("third")).length===3;
+  });
+  const nextBtn = document.getElementById("nextBtn");
+  if(allGroupsComplete && thirdPlaceSelections.length===8){
+    nextBtn.classList.add("active");
+    nextBtn.disabled=false;
+  } else {
+    nextBtn.classList.remove("active");
+    nextBtn.disabled=true;
+  }
+}
+</script>
+
+</body>
+</html>
