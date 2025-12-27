@@ -2,46 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WC2026 Hub | World Cup 2026</title>
+    <title>WC 2026 Fan Predictions</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Link CSS -->
-    <link rel="stylesheet" href="style.css">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #0b0b0b;
+            color: #ffffff;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #cccccc;
+            margin-bottom: 35px;
+        }
+
+        .cta-btn {
+            padding: 15px 35px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: #00ff99;
+            color: #000;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #00ff99;
+        }
+
+        .tagline {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-
-        <h1>Welcome to WC2026 Hub ⚽</h1>
-
-        <p>
-            WC2026 Hub is your upcoming destination for everything related to the FIFA World Cup 2026.
-            Here you will find match updates, team information, player stats, predictions, quizzes,
-            and exclusive digital football content.
-        </p>
-
-        <p>
-            This website is currently under development. New features and content will be added soon.
-            Stay tuned and bookmark this page!
-        </p>
-
-        <p>
-            📩 For business & collaboration enquiries:<br>
-            <strong>wc2026hub@gmail.com</strong>
-        </p>
-        
-        <a href="fan-prediction.html" 
-   style="display:inline-block; padding:12px 25px; background:#0b5ed7; color:white; text-decoration:none; border-radius:5px; font-weight:bold; margin-top:10px;">
-    Predict Now
-</a>
-
-        <hr>
-
-        <div class="footer">
-            © 2025 WC2026 Hub | All rights reserved
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Predict the Road to Glory<br>FIFA World Cup 2026</h1>
+            <p>
+                From group stage upsets to the final whistle —  
+                let football fans decide who lifts the trophy.
+            </p>
+            <button class="cta-btn">Start Predicting</button>
+            <div class="tagline">Fan-based predictions • No betting involved</div>
         </div>
-
-    </div>
+    </section>
 
 </body>
 </html>
