@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Group Stage Predictions | WC 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #0b0b0b;
+    color: #fff;
+}
+
+/* NAV */
+nav {
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0b0b0b;
+}
+
+.logo {
+    color: #00ff99;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* PROGRESS */
+.progress {
+    padding: 30px;
+    text-align: center;
+}
+
+.progress span {
+    color: #00ff99;
+    font-weight: 600;
+}
+
+/* GROUP */
+.group {
+    max-width: 1000px;
+    margin: auto;
+    padding: 30px;
+}
+
+.group h2 {
+    margin-bottom: 15px;
+}
+
+.teams {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.team {
+    background: #111;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 2px solid transparent;
+}
+
+.team:hover {
+    transform: scale(1.05);
+}
+
+.team.selected {
+    border-color: #00ff99;
+    box-shadow: 0 0 15px #00ff99;
+}
+
+.next-btn {
+    display: block;
+    margin: 40px auto;
+    padding: 15px 40px;
+    background: #00ff99;
+    color: #000;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.next-btn.active {
+    cursor: pointer;
+    opacity: 1;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">WC26 PREDICT</div>
+</nav>
+
+<div class="progress">
+    <span>STEP 1 OF 5</span> – Group Stage Predictions
+</div>
+
+<!-- GROUP A -->
+<div class="group" data-group="A">
+    <h2>Group A (Select 2)</h2>
+    <div class="teams">
+        <div class="team">Brazil</div>
+        <div class="team">Germany</div>
+        <div class="team">Japan</div>
+        <div class="team">Canada</div>
+    </div>
+</div>
+
+<button class="next-btn" id="nextBtn">Next</button>
+
+<script>
+const teams = document.querySelectorAll('.team');
+let selectedCount = 0;
+
+teams.forEach(team => {
+    team.addEventListener('click', () => {
+        if (team.classList.contains('selected')) {
+            team.classList.remove('selected');
+            selectedCount--;
+        } else {
+            if (selectedCount < 2) {
+                team.classList.add('selected');
+                selectedCount++;
+            }
+        }
+
+        if (selectedCount === 2) {
+            document.getElementById('nextBtn').classList.add('active');
+            document.getElementById('nextBtn').disabled = false;
+        } else {
+            document.getElementById('nextBtn').classList.remove('active');
+        }
+    });
+});
+</script>
+
+</body>
+</html>
