@@ -130,13 +130,22 @@ function checkNextButton(){
     return teams.filter(t=>t.classList.contains("first")||t.classList.contains("second")||t.classList.contains("third")).length===3;
   });
   const nextBtn = document.getElementById("nextBtn");
+
   if(allGroupsComplete && thirdPlaceSelections.length===8){
     nextBtn.classList.add("active");
     nextBtn.disabled = false;
-    nextBtn.onclick = () => window.location.href='round32.html';
+
+    // Make sure the button is clickable
+    nextBtn.style.cursor = "pointer";
+    nextBtn.onclick = function(){
+      window.location.href='round32.html';
+    };
   } else {
     nextBtn.classList.remove("active");
     nextBtn.disabled = true;
+
+    // Prevent clicking
+    nextBtn.style.cursor = "not-allowed";
     nextBtn.onclick = null;
   }
 }
