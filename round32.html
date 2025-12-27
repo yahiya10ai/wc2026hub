@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WC 2026 Bracket</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:#0b0b0b;color:#fff;}
+.container{display:flex;flex-wrap:wrap;justify-content:center;padding:20px;}
+.round{display:flex;flex-direction:column;align-items:center;margin:0 10px;}
+.round h2{margin-bottom:20px;color:#00ff99;text-align:center;}
+.match{background:#111;border-radius:15px;padding:10px 20px;margin:10px 0;width:150px;cursor:pointer;position:relative;transition:0.3s;display:flex;flex-direction:column;}
+.match:hover{transform:translateY(-4px);}
+.team{padding:5px 0;border-radius:8px;}
+.team.winner{background:#00ff99;color:#000;font-weight:600;box-shadow:0 0 10px #00ff99;}
+.team.loser{background:#555;color:#aaa;}
+.final-winner{margin-top:50px;text-align:center;}
+.final-winner .card{background:#ffd700;color:#000;font-size:1.5rem;padding:20px 40px;border-radius:20px;display:inline-block;box-shadow:0 0 30px #ffd700;}
+@media(max-width:900px){
+  .container{flex-direction:column;align-items:center;}
+  .round{margin:20px 0;}
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="bracketContainer"></div>
+
+<div class="final-winner" id="championDiv" style="display:none;">
+  <div class="card">🏆 Champion: <span id="championName"></span></div>
+</div>
+
+<script>
+// Example data: Replace with actual group stage picks dynamically if available
+let round32 = [
+  {id:1, team1:"A1", team2:"C3", winner:null},
+  {id:2, team1:"B1", team2:"D3", winner:null},
+  {id:3, team1:"C1", team2:"B2", winner:null},
+  {id:4, team1:"D1", team2:"A2", winner:null},
+  {id:5, team1:"E1", team2:"F3", winner:null},
+  {id:6, team1:"F1", team2:"E2", winner:null},
+  {id:7, team1:"G1", team2:"H3", winner:null},
+  {id:8, team1:"H1", team2:"G2", winner:null},
+  {id:9, team1:"I1", team2:"J3", winner:null},
+  {id:10, team1:"J1", team2:"I2", winner:null},
+  {id:11, team1:"K1", team2:"L3", winner:null},
+  {id:12, team1:"L1", team2:"K2", winner:null},
+  {id:13, team1:"A3", team2:"B3", winner:null},
+  {id:14, team1:"C2", team2:"D2", winner:null},
+  {id:15, team1:"E3", team2:"F2", winner:null},
+  {id:16, team1:"G3", team2:"H2", winner:null}
+];
+
+let rounds = [
+  {name:"Round of 32", matches:round32, next:[]},
+  {name:"Round of 16", matches:[], next:[]},
+  {name:"Quarterfinals", matches:[], next:[]},
+  {name:"Semifinals", matches:[], next:[]},
+  {name:"Final", matches:[], next:[]}
+];
+
+const bracketContainer = document.getElementById("bracketContainer");
+const championDiv = document.getElementById("championDiv");
+const championName = document.getElementById("championName");
+
+// Render rounds
+function renderRounds(){
+  bracketContainer.innerHTML = "";
+  rounds.forEach((round, rIndex)=>{
+    const roundDiv = document.createElement("div");
+    roundDiv.className = "round";
+    roundDiv.innerHTML = `<h2>${round.name}</h2>`;
+    round.matches.forEach((match,mIndex)=>{
+      const matchDiv = document.createElement("div");
+      matchDiv.className = "match";
+      matchDiv.dataset.rIndex = rIndex;
+      matchDiv.dataset.mIndex = mIndex;
+      matchDiv.innerHTML = `<div class="team">${match.team1}</div><div class="team">${match.team2}</div>`;
+      matchDiv.onclick = ()=> selectWinner(matchDiv);
+      roundDiv.appendChild(matchDiv);
+    });
+    bracketContainer.appendChild(roundDiv);
+  });
+}
+
+// Handle winner selection
+function selectWinner(matchDiv){
+  const rIndex = parseInt(matchDiv.dataset.rIndex);
+  const mIndex = parseInt(matchDiv.dataset.mIndex);
+  const round = rounds[rIndex];
+  const match = round.matches[mIndex];
+  const teams = matchDiv.querySelectorAll(".team");
+  
+  teams.forEach(t=>{
+    t.onclick = e=>{
+      e.stopPropagation();
+      const selectedTeam = t.innerText;
+      // Update winner in match
+      match.winner = selectedTeam;
+      teams.forEach(tt=>{
+        tt.classList.remove("winner","loser");
+        if(tt.innerText===selectedTeam) tt.classList.add("winner");
+        else tt.classList.add("loser");
+      });
+      // Push to next round
+      if(rIndex < rounds.length-1){
+        const nextRound = rounds[rIndex+1];
+        if(nextRound.matches.length <= Math.floor(mIndex/2)){
+          nextRound.matches.push({id:match.id, team1:selectedTeam, team2:"", winner:null});
+        } else {
+          if(!nextRound.matches[Math.floor(mIndex/2)].team2)
+            nextRound.matches[Math.floor(mIndex/2)].team2 = selectedTeam;
+        }
+      }
+      // Check if final match completed
+      const finalRound = rounds[rounds.length-1];
+      if(finalRound.matches.length && finalRound.matches[0].team1 && finalRound.matches[0].team2 && finalRound.matches[0].winner){
+        championDiv.style.display = "block";
+        championName.innerText = finalRound.matches[0].winner;
+      } else if(finalRound.matches.length===1 && finalRound.matches[0].team1 && finalRound.matches[0].team2){
+        championDiv.style.display = "block";
+        championName.innerText = "Pick the winner!";
+      }
+      renderRounds();
+    }
+  });
+}
+
+renderRounds();
+</script>
+
+</body>
+</html>
