@@ -36,7 +36,7 @@ h1{text-align:center;color:#00ff99;margin-bottom:20px;}
 </div>
 
 <script>
-// Example initial Round of 32 teams (replace with actual group winners/2nd/8 third-place later)
+// Initial placeholder Round of 32 teams from group stage
 let round32 = [
   {id:1,team1:"A1",team2:"C3",winner:null},
   {id:2,team1:"B1",team2:"D3",winner:null},
@@ -57,88 +57,79 @@ let round32 = [
 ];
 
 let rounds = [
-  {name:"Round of 32",matches:round32, next:[]},
-  {name:"Round of 16",matches:[], next:[]},
-  {name:"Quarterfinals",matches:[], next:[]},
-  {name:"Semifinals",matches:[], next:[]},
-  {name:"Final",matches:[], next:[]}
+  {name:"Round of 32",matches:round32},
+  {name:"Round of 16",matches:[]},
+  {name:"Quarterfinals",matches:[]},
+  {name:"Semifinals",matches:[]},
+  {name:"Final",matches:[]}
 ];
 
 const bracketContainer = document.getElementById("bracketContainer");
 const championDiv = document.getElementById("championDiv");
 const championName = document.getElementById("championName");
 
-// Render all rounds
+// Render rounds
 function renderRounds(){
-  bracketContainer.innerHTML = "";
+  bracketContainer.innerHTML="";
   rounds.forEach((round,rIndex)=>{
-    const roundDiv = document.createElement("div");
+    const roundDiv=document.createElement("div");
     roundDiv.className="round";
     roundDiv.innerHTML=`<h2>${round.name}</h2>`;
+    
     round.matches.forEach((match,mIndex)=>{
-      const matchDiv = document.createElement("div");
+      const matchDiv=document.createElement("div");
       matchDiv.className="match";
       matchDiv.dataset.rIndex=rIndex;
       matchDiv.dataset.mIndex=mIndex;
       matchDiv.innerHTML=`<div class="team">${match.team1}</div><div class="team">${match.team2}</div>`;
-      matchDiv.onclick=()=>selectWinner(matchDiv);
       roundDiv.appendChild(matchDiv);
 
-      // Draw connector line if not last round
+      // Draw connector
       if(rIndex<rounds.length-1){
         const conn=document.createElement("div");
         conn.className="connector";
         matchDiv.appendChild(conn);
       }
+
+      // Click teams
+      matchDiv.querySelectorAll(".team").forEach(t=>{
+        t.onclick=e=>{
+          e.stopPropagation();
+          match.winner=t.innerText;
+          matchDiv.querySelectorAll(".team").forEach(tt=>{
+            tt.classList.remove("winner","loser");
+            if(tt.innerText===match.winner) tt.classList.add("winner");
+            else tt.classList.add("loser");
+          });
+
+          // Push winner to next round
+          if(rIndex<rounds.length-1){
+            const nextRound=rounds[rIndex+1];
+            const idx=Math.floor(mIndex/2);
+            if(!nextRound.matches[idx]) nextRound.matches[idx]={id:match.id,team1:"",team2:"",winner:null};
+            if(mIndex%2===0) nextRound.matches[idx].team1=match.winner;
+            else nextRound.matches[idx].team2=match.winner;
+          }
+
+          // Show final champion if final match winner exists
+          const finalMatch=rounds[rounds.length-1].matches[0];
+          if(finalMatch && finalMatch.team1 && finalMatch.team2 && finalMatch.winner){
+            championDiv.style.display="block";
+            championName.innerText=finalMatch.winner;
+          } else if(finalMatch && finalMatch.team1 && finalMatch.team2){
+            championDiv.style.display="block";
+            championName.innerText="Pick the winner!";
+          }
+
+          renderRounds();
+        };
+      });
     });
     bracketContainer.appendChild(roundDiv);
   });
 }
 
-// Handle winner selection
-function selectWinner(matchDiv){
-  const rIndex=parseInt(matchDiv.dataset.rIndex);
-  const mIndex=parseInt(matchDiv.dataset.mIndex);
-  const round=rounds[rIndex];
-  const match=round.matches[mIndex];
-  const teams=matchDiv.querySelectorAll(".team");
-  
-  teams.forEach(t=>{
-    t.onclick=e=>{
-      e.stopPropagation();
-      const selected=t.innerText;
-      match.winner=selected;
-      teams.forEach(tt=>{
-        tt.classList.remove("winner","loser");
-        if(tt.innerText===selected) tt.classList.add("winner");
-        else tt.classList.add("loser");
-      });
-      // Push winner to next round
-      if(rIndex<rounds.length-1){
-        const nextRound=rounds[rIndex+1];
-        if(nextRound.matches.length<=Math.floor(mIndex/2)){
-          nextRound.matches.push({id:match.id,team1:selected,team2:"",winner:null});
-        } else {
-          if(!nextRound.matches[Math.floor(mIndex/2)].team2)
-            nextRound.matches[Math.floor(mIndex/2)].team2=selected;
-        }
-      }
-      // Show final winner if final match has winner
-      const finalMatch=rounds[rounds.length-1].matches[0];
-      if(finalMatch && finalMatch.team1 && finalMatch.team2 && finalMatch.winner){
-        championDiv.style.display="block";
-        championName.innerText=finalMatch.winner;
-      } else if(finalMatch && finalMatch.team1 && finalMatch.team2){
-        championDiv.style.display="block";
-        championName.innerText="Pick the winner!";
-      }
-      renderRounds();
-    }
-  });
-}
-
 renderRounds();
 </script>
-
 </body>
 </html>
