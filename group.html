@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>WC 2026 Group Predictions</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WC 2026 Group Stage</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
@@ -30,12 +30,15 @@ nav{padding:20px 60px;background:#0b0b0b;position:sticky;top:0;z-index:10;}
 </style>
 </head>
 <body>
+
 <nav>
   <div class="logo">WC26 PREDICT</div>
 </nav>
 <div class="progress"><span>STEP 1 OF 6</span> – Group Stage (Pick 1st, 2nd & 3rd)</div>
 <div id="groups"></div>
-<button id="nextBtn" class="next-btn">Proceed to Round of 32</button>
+
+<!-- NEXT BUTTON -->
+<button id="nextBtn" class="next-btn" onclick="window.location.href='round32.html'">Proceed to Round of 32</button>
 
 <script>
 const groupData={
@@ -52,96 +55,5 @@ J:["Argentina","Algeria","Austria","Jordan"],
 K:["Portugal","COD/JAM/NCL","Uzbekistan","Colombia"],
 L:["England","Croatia","Ghana","Panama"]
 };
-  
-const container=document.getElementById("groups");
-let thirdPlaceSelections = [];
 
-Object.entries(groupData).forEach(([group,teams])=>{
-  const section=document.createElement("div");
-  section.className="group";
-  section.dataset.group=group;
-  section.dataset.complete=false;
-  section.innerHTML=`<h2>Group ${group}</h2><div class="teams"></div>`;
-  const box=section.querySelector(".teams");
-  const ranks={ first:null, second:null, third:null };
-
-  teams.forEach(team=>{
-    const card=document.createElement("div");
-    card.className="team";
-    card.innerHTML=`<div>${team}</div>`;
-    card.onclick=()=>{
-      if(!ranks.first){
-        assign(card,"first","1st");
-      }else if(!ranks.second && card!==ranks.first){
-        assign(card,"second","2nd");
-      }else if(!ranks.third && card!==ranks.first && card!==ranks.second){
-        if(thirdPlaceSelections.length < 8){
-          assign(card,"third","3rd");
-          thirdPlaceSelections.push(card);
-          updateThirdDisabled();
-        } else {
-          alert("Only 8 third-place teams can be selected across all groups.");
-        }
-      }else{
-        reset(card);
-      }
-      section.dataset.complete=Object.values(ranks).every(v=>v);
-      checkAll();
-    };
-
-    function assign(el,rank,label){
-      if(ranks[rank]) reset(ranks[rank]);
-      el.classList.add(rank);
-      el.insertAdjacentHTML("beforeend",`<div class="rank">${label}</div>`);
-      ranks[rank]=el;
-    }
-
-    function reset(el){
-      ["first","second","third"].forEach(r=>{
-        if(ranks[r]===el) ranks[r]=null;
-      });
-      if(el.classList.contains("third")){
-        const index = thirdPlaceSelections.indexOf(el);
-        if(index > -1) thirdPlaceSelections.splice(index,1);
-        updateThirdDisabled();
-      }
-      el.className="team";
-      const badge=el.querySelector(".rank");
-      if(badge) badge.remove();
-    }
-
-    box.appendChild(card);
-  });
-
-  container.appendChild(section);
-});
-
-function updateThirdDisabled(){
-  document.querySelectorAll('.team.third').forEach(card=>{
-    card.classList.remove('disabled');
-  });
-  if(thirdPlaceSelections.length >= 8){
-    document.querySelectorAll('.team:not(.third)').forEach(card=>{
-      if(!card.classList.contains('first') && !card.classList.contains('second')){
-        card.classList.add('disabled');
-      }
-    });
-  }
-}
-
-function checkAll(){
-  const completed=document.querySelectorAll('[data-complete="true"]').length;
-  const btn=document.getElementById("nextBtn");
-  if(completed===12 && thirdPlaceSelections.length===8){
-    btn.classList.add("active");
-    btn.disabled=false;
-  } else {
-    btn.classList.remove("active");
-    btn.disabled=true;
-    <button id="nextBtn" class="next-btn" onclick="window.location.href='round32.html'">Proceed to Round of 32</button>
-"Add Next button to go to Round of 32"
-  }
-}
-</script>
-</body>
-</html>
+con
