@@ -32,9 +32,8 @@ h1{text-align:center;color:#00ff99;margin-bottom:30px;font-size:2rem;}
 <div class="group-container" id="groups"></div>
 
 <button id="nextBtn">Proceed to Round of 32</button>
-
-<script>
-// Group teams
+  
+  <script>
 const groupData = {
 A:["Mexico","South Africa","Korea Republic","Czech/Den/Iran/MKD"],
 B:["Canada","BiH/Italy/NIR/WAL","Qatar","Switzerland"],
@@ -71,23 +70,35 @@ Object.entries(groupData).forEach(([group, teams])=>{
 
 function selectTeam(card, section){
   const teams = Array.from(section.querySelectorAll(".team"));
-  let first = teams.find(t=>t.classList.contains("first"));
-  let second = teams.find(t=>t.classList.contains("second"));
-  let third = teams.find(t=>t.classList.contains("third"));
+  const isFirst = card.classList.contains("first");
+  const isSecond = card.classList.contains("second");
+  const isThird = card.classList.contains("third");
+
+  // Clicking already selected team → remove it
+  if(isFirst || isSecond || isThird){
+    reset(card);
+    section.dataset.complete = false;
+    checkNextButton();
+    return;
+  }
+
+  // Assign 1st
+  const first = teams.find(t=>t.classList.contains("first"));
+  const second = teams.find(t=>t.classList.contains("second"));
+  const third = teams.find(t=>t.classList.contains("third"));
 
   if(!first){assign(card,"first","1st")}
-  else if(!second && card!==first){assign(card,"second","2nd")}
-  else if(!third && card!==first && card!==second){
-    if(thirdPlaceSelections.length<8){assign(card,"third","3rd");thirdPlaceSelections.push(card);updateThirdDisabled();}
+  else if(!second){assign(card,"second","2nd")}
+  else if(!third){
+    if(thirdPlaceSelections.length<8){assign(card,"third","3rd"); thirdPlaceSelections.push(card); updateThirdDisabled();}
     else alert("Only 8 third-place teams can be selected.");
-  } else reset(card);
+  }
 
   section.dataset.complete = teams.filter(t=>t.classList.contains("first")||t.classList.contains("second")||t.classList.contains("third")).length===3;
   checkNextButton();
 }
 
 function assign(card,rank,label){
-  ["first","second","third"].forEach(r=>card.classList.remove(r));
   card.classList.add(rank);
   const badge = document.createElement("div");
   badge.className = "rank";
@@ -101,8 +112,8 @@ function reset(card){
     if(index>-1) thirdPlaceSelections.splice(index,1);
     updateThirdDisabled();
   }
-  card.className="team";
-  const badge=card.querySelector(".rank");
+  card.classList.remove("first","second","third");
+  const badge = card.querySelector(".rank");
   if(badge) badge.remove();
 }
 
@@ -131,5 +142,3 @@ function checkNextButton(){
 }
 </script>
 
-</body>
-</html>
