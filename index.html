@@ -2,144 +2,39 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>WC 2026 Group Predictions</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WC 2026 Prediction</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-body{background:#0b0b0b;color:#fff;}
-nav{padding:20px 60px;background:#0b0b0b;position:sticky;top:0;z-index:10;}
-.logo{color:#00ff99;font-size:1.3rem;font-weight:700;}
-.progress{text-align:center;margin:30px 0;font-weight:600;}
-.progress span{color:#00ff99;}
-.group{max-width:1100px;margin:50px auto;padding:0 30px;}
-.group h2{margin-bottom:20px;}
-.teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;}
-.team{background:#111;padding:22px;border-radius:18px;text-align:center;cursor:pointer;position:relative;border:2px solid transparent;transition:0.3s;}
-.team:hover{transform:translateY(-6px);}
-.rank{position:absolute;top:12px;right:12px;padding:5px 10px;border-radius:20px;font-size:0.7rem;font-weight:600;}
-.first{border-color:#ffd700;box-shadow:0 0 15px #ffd700;}
-.first .rank{background:#ffd700;color:#000;}
-.second{border-color:#c0c0c0;box-shadow:0 0 15px #c0c0c0;}
-.second .rank{background:#c0c0c0;color:#000;}
-.third{border-color:#cd7f32;box-shadow:0 0 15px #cd7f32;}
-.third .rank{background:#cd7f32;color:#000;}
-.third.disabled{opacity:0.5;pointer-events:none;}
-.next-btn{display:block;margin:60px auto;padding:16px 45px;font-size:1rem;font-weight:600;background:#00ff99;color:#000;border:none;border-radius:40px;opacity:0.4;cursor:not-allowed;transition:0.3s;}
-.next-btn.active{opacity:1;cursor:pointer;box-shadow:0 0 20px #00ff99;}
+body{background:#0b0b0b;color:#fff;text-align:center;}
+.logo{font-size:2rem;color:#00ff99;margin-top:50px;font-weight:700;}
+.countdown{font-size:2rem;margin:40px 0;}
+button{padding:16px 45px;font-size:1rem;font-weight:600;background:#00ff99;color:#000;border:none;border-radius:40px;cursor:pointer;transition:0.3s;}
+button:hover{box-shadow:0 0 20px #00ff99;}
 </style>
 </head>
 <body>
-<nav>
-  <div class="logo">WC26 PREDICT</div>
-</nav>
-<div class="progress"><span>STEP 1 OF 6</span> – Group Stage (Pick 1st, 2nd & 3rd)</div>
-<div id="groups"></div>
-<button id="nextBtn" class="next-btn">Proceed to Round of 32</button>
+
+<div class="logo">WC 2026 PREDICTION</div>
+<div class="countdown" id="countdown">Loading...</div>
+<a href="group.html"><button>Predict Now</button></a>
 
 <script>
-const groupData={
-A:["Mexico","South Africa","Korea Republic","CZE/DEN/IRN/MKD"],
-B:["Canada","BIH/ITA/NIR/WAL","Qatar","Switzerland"],
-C:["Brazil","Morocco","Haiti","Scotland"],
-D:["USA","Paraguay","Australia","KOS/BUL/SVK/TUR"],
-E:["Germany","Curacao","Côte d’Ivoire","Ecuador"],
-F:["Netherlands","Japan","ALB/POL/SWE/UKR","Tunisia"],
-G:["Belgium","Egypt","Iran","New Zealand"],
-H:["Spain","Cabo Verde","Saudi Arabia","Uruguay"],
-I:["France","Senegal","BOL/IRQ/SUR","Norway"],
-J:["Argentina","Algeria","Austria","Jordan"],
-K:["Portugal","COD/JAM/NCL","Uzbekistan","Colombia"],
-L:["England","Croatia","Ghana","Panama"]
-};
-
-const container=document.getElementById("groups");
-let thirdPlaceSelections = [];
-
-Object.entries(groupData).forEach(([group,teams])=>{
-  const section=document.createElement("div");
-  section.className="group";
-  section.dataset.group=group;
-  section.dataset.complete=false;
-  section.innerHTML=`<h2>Group ${group}</h2><div class="teams"></div>`;
-  const box=section.querySelector(".teams");
-  const ranks={ first:null, second:null, third:null };
-
-  teams.forEach(team=>{
-    const card=document.createElement("div");
-    card.className="team";
-    card.innerHTML=`<div>${team}</div>`;
-    card.onclick=()=>{
-      if(!ranks.first){
-        assign(card,"first","1st");
-      }else if(!ranks.second && card!==ranks.first){
-        assign(card,"second","2nd");
-      }else if(!ranks.third && card!==ranks.first && card!==ranks.second){
-        if(thirdPlaceSelections.length < 8){
-          assign(card,"third","3rd");
-          thirdPlaceSelections.push(card);
-          updateThirdDisabled();
-        } else {
-          alert("Only 8 third-place teams can be selected across all groups.");
-        }
-      }else{
-        reset(card);
-      }
-      section.dataset.complete=Object.values(ranks).every(v=>v);
-      checkAll();
-    };
-
-    function assign(el,rank,label){
-      if(ranks[rank]) reset(ranks[rank]);
-      el.classList.add(rank);
-      el.insertAdjacentHTML("beforeend",`<div class="rank">${label}</div>`);
-      ranks[rank]=el;
-    }
-
-    function reset(el){
-      ["first","second","third"].forEach(r=>{
-        if(ranks[r]===el) ranks[r]=null;
-      });
-      if(el.classList.contains("third")){
-        const index = thirdPlaceSelections.indexOf(el);
-        if(index > -1) thirdPlaceSelections.splice(index,1);
-        updateThirdDisabled();
-      }
-      el.className="team";
-      const badge=el.querySelector(".rank");
-      if(badge) badge.remove();
-    }
-
-    box.appendChild(card);
-  });
-
-  container.appendChild(section);
-});
-
-function updateThirdDisabled(){
-  document.querySelectorAll('.team.third').forEach(card=>{
-    card.classList.remove('disabled');
-  });
-  if(thirdPlaceSelections.length >= 8){
-    document.querySelectorAll('.team:not(.third)').forEach(card=>{
-      if(!card.classList.contains('first') && !card.classList.contains('second')){
-        card.classList.add('disabled');
-      }
-    });
-  }
-}
-
-function checkAll(){
-  const completed=document.querySelectorAll('[data-complete="true"]').length;
-  const btn=document.getElementById("nextBtn");
-  if(completed===12 && thirdPlaceSelections.length===8){
-    btn.classList.add("active");
-    btn.disabled=false;
-  } else {
-    btn.classList.remove("active");
-    btn.disabled=true;
-  }
-}
+// Countdown timer
+const wcStart = new Date("June 8, 2026 00:00:00").getTime();
+const countdownEl = document.getElementById("countdown");
+const timer = setInterval(()=>{
+  const now = new Date().getTime();
+  const diff = wcStart - now;
+  if(diff<=0){ clearInterval(timer); countdownEl.innerHTML="WC 2026 has started!"; return; }
+  const days=Math.floor(diff/(1000*60*60*24));
+  const hours=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+  const mins=Math.floor((diff%(1000*60*60))/(1000*60));
+  const secs=Math.floor((diff%(1000*60))/1000);
+  countdownEl.innerHTML=`${days}d ${hours}h ${mins}m ${secs}s`;
+},1000);
 </script>
+
 </body>
 </html>
