@@ -1,198 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>WC 2026 Fan Predictions</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>WC 2026 Group Predictions</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+<style>
+*{
+  margin:0; padding:0; box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
 
-        body {
-            background: #0b0b0b;
-            color: #ffffff;
-        }
+body{
+  background:#0b0b0b;
+  color:#fff;
+}
 
-        /* NAVBAR */
-        nav {
-            width: 100%;
-            padding: 20px 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            background: rgba(11, 11, 11, 0.95);
-            z-index: 100;
-        }
+nav{
+  padding:20px 60px;
+  background:#0b0b0b;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
 
-        .logo {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #00ff99;
-        }
+.logo{
+  color:#00ff99;
+  font-size:1.3rem;
+  font-weight:700;
+}
 
-        .nav-links a {
-            margin-left: 30px;
-            text-decoration: none;
-            color: #ffffff;
-            font-size: 0.95rem;
-            transition: color 0.3s;
-        }
+.progress{
+  text-align:center;
+  margin:30px 0;
+  font-weight:600;
+}
+.progress span{ color:#00ff99; }
 
-        .nav-links a:hover {
-            color: #00ff99;
-        }
+.group{
+  max-width:1100px;
+  margin:50px auto;
+  padding:0 30px;
+}
 
-        /* HERO */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 100px 20px 20px;
-        }
+.group h2{ margin-bottom:20px; }
 
-        .hero-content {
-            max-width: 750px;
-        }
+.teams{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:22px;
+}
 
-        .hero h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
+.team{
+  background:#111;
+  padding:22px;
+  border-radius:18px;
+  text-align:center;
+  cursor:pointer;
+  position:relative;
+  border:2px solid transparent;
+  transition:0.3s;
+}
 
-        .hero p {
-            font-size: 1.1rem;
-            color: #cccccc;
-            margin-bottom: 30px;
-        }
+.team:hover{ transform:translateY(-6px); }
 
-        .cta-btn {
-            padding: 15px 35px;
-            font-size: 1rem;
-            font-weight: 600;
-            background: #00ff99;
-            color: #000;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+.rank{
+  position:absolute;
+  top:12px;
+  right:12px;
+  padding:5px 10px;
+  border-radius:20px;
+  font-size:0.7rem;
+  font-weight:600;
+}
 
-        .cta-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px #00ff99;
-        }
+.first{
+  border-color:#ffd700;
+  box-shadow:0 0 15px #ffd700;
+}
+.first .rank{ background:#ffd700; color:#000; }
 
-        /* COUNTDOWN */
-        .countdown {
-            display: flex;
-            justify-content: center;
-            margin-top: 40px;
-            gap: 20px;
-        }
+.second{
+  border-color:#c0c0c0;
+  box-shadow:0 0 15px #c0c0c0;
+}
+.second .rank{ background:#c0c0c0; color:#000; }
 
-        .time-box {
-            background: #111;
-            padding: 15px 20px;
-            border-radius: 12px;
-            min-width: 90px;
-        }
+.third{
+  border-color:#cd7f32;
+  box-shadow:0 0 15px #cd7f32;
+}
+.third .rank{ background:#cd7f32; color:#000; }
 
-        .time-box h2 {
-            font-size: 1.8rem;
-            color: #00ff99;
-        }
-
-        .time-box span {
-            font-size: 0.75rem;
-            color: #aaa;
-        }
-
-        .tagline {
-            margin-top: 25px;
-            font-size: 0.85rem;
-            color: #888;
-        }
-    </style>
+.next-btn{
+  display:block;
+  margin:60px auto;
+  padding:16px 45px;
+  font-size:1rem;
+  font-weight:600;
+  background:#00ff99;
+  color:#000;
+  border:none;
+  border-radius:40px;
+  opacity:0.4;
+  cursor:not-allowed;
+  transition:0.3s;
+}
+.next-btn.active{
+  opacity:1;
+  cursor:pointer;
+  box-shadow:0 0 20px #00ff99;
+}
+</style>
 </head>
+
 <body>
 
-    <!-- NAVIGATION -->
-    <nav>
-        <div class="logo">WC26 PREDICT</div>
-        <div class="nav-links">
-            <a href="#">Home</a>
-            <a href="#">Predict</a>
-        </div>
-    </nav>
+<nav>
+  <div class="logo">WC26 PREDICT</div>
+</nav>
 
-    <!-- HERO SECTION -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Predict the Road to Glory<br>FIFA World Cup 2026</h1>
-            <p>
-                From group stage upsets to the final whistle —  
-                football fans decide the champion.
-            </p>
+<div class="progress">
+  <span>STEP 1 OF 6</span> – Group Stage (Pick 1st, 2nd & 3rd)
+</div>
 
-            <button class="cta-btn">Start Predicting</button>
+<div id="groups"></div>
 
-            <!-- COUNTDOWN -->
-            <div class="countdown">
-                <div class="time-box">
-                    <h2 id="days">00</h2>
-                    <span>DAYS</span>
-                </div>
-                <div class="time-box">
-                    <h2 id="hours">00</h2>
-                    <span>HOURS</span>
-                </div>
-                <div class="time-box">
-                    <h2 id="minutes">00</h2>
-                    <span>MINUTES</span>
-                </div>
-                <div class="time-box">
-                    <h2 id="seconds">00</h2>
-                    <span>SECONDS</span>
-                </div>
-            </div>
+<button id="nextBtn" class="next-btn">Proceed to Round of 32</button>
 
-            <div class="tagline">Fan-based predictions • No betting involved</div>
-        </div>
-    </section>
+<script>
+const groupData={
+A:["Mexico","South Africa","Korea Republic","CZE/DEN/IRN/MKD"],
+B:["Canada","BIH/ITA/NIR/WAL","Qatar","Switzerland"],
+C:["Brazil","Morocco","Haiti","Scotland"],
+D:["USA","Paraguay","Australia","KOS/BUL/SVK/TUR"],
+E:["Germany","Curaçao","Côte d’Ivoire","Ecuador"],
+F:["Netherlands","Japan","ALB/POL/SWE/UKR","Tunisia"],
+G:["Belgium","Egypt","Iran","New Zealand"],
+H:["Spain","Cabo Verde","Saudi Arabia","Uruguay"],
+I:["France","Senegal","BOL/IRQ/SUR","Norway"],
+J:["Argentina","Algeria","Austria","Jordan"],
+K:["Portugal","COD/JAM/NCL","Uzbekistan","Colombia"],
+L:["England","Croatia","Ghana","Panama"]
+};
 
-    <!-- COUNTDOWN SCRIPT -->
-    <script>
-        const wcDate = new Date("June 11, 2026 00:00:00").getTime();
+const container=document.getElementById("groups");
 
-        setInterval(() => {
-            const now = new Date().getTime();
-            const diff = wcDate - now;
+Object.entries(groupData).forEach(([group,teams])=>{
+  const section=document.createElement("div");
+  section.className="group";
+  section.dataset.group=group;
+  section.dataset.complete=false;
+  section.innerHTML=`<h2>Group ${group}</h2><div class="teams"></div>`;
+  const box=section.querySelector(".teams");
 
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            const minutes = Math.floor((diff / (1000 * 60)) % 60);
-            const seconds = Math.floor((diff / 1000) % 60);
+  const ranks={ first:null, second:null, third:null };
 
-            document.getElementById("days").innerText = days;
-            document.getElementById("hours").innerText = hours;
-            document.getElementById("minutes").innerText = minutes;
-            document.getElementById("seconds").innerText = seconds;
-        }, 1000);
-    </script>
+  teams.forEach(team=>{
+    const card=document.createElement("div");
+    card.className="team";
+    card.innerHTML=`<div>${team}</div>`;
+
+    card.onclick=()=>{
+      if(!ranks.first){
+        assign(card,"first","1st");
+      }else if(!ranks.second && card!==ranks.first){
+        assign(card,"second","2nd");
+      }else if(!ranks.third && card!==ranks.first && card!==ranks.second){
+        assign(card,"third","3rd");
+      }else{
+        reset(card);
+      }
+      section.dataset.complete=Object.values(ranks).every(v=>v);
+      checkAll();
+    };
+
+    function assign(el,rank,label){
+      if(ranks[rank]) reset(ranks[rank]);
+      el.classList.add(rank);
+      el.insertAdjacentHTML("beforeend",`<div class="rank">${label}</div>`);
+      ranks[rank]=el;
+    }
+
+    function reset(el){
+      ["first","second","third"].forEach(r=>{
+        if(ranks[r]===el) ranks[r]=null;
+      });
+      el.className="team";
+      const badge=el.querySelector(".rank");
+      if(badge) badge.remove();
+    }
+
+    box.appendChild(card);
+  });
+
+  container.appendChild(section);
+});
+
+function checkAll(){
+  const completed=document.querySelectorAll('[data-complete="true"]').length;
+  const btn=document.getElementById("nextBtn");
+  if(completed===12){
+    btn.classList.add("active");
+    btn.disabled=false;
+  }
+}
+</script>
 
 </body>
 </html>
