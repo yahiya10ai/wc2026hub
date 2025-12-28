@@ -2,17 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FIFA World Cup 2026 – Round of 32 Fixtures</title>
+<title>FIFA World Cup 2026 – Round of 32</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
   margin:0;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family:"Segoe UI", Arial, sans-serif;
   background:#0b0b0b;
   color:#fff;
 }
-
 header{
   text-align:center;
   padding:20px;
@@ -30,30 +29,37 @@ header{
   padding:20px;
 }
 
-.top{
-  background:#b5121b;
-}
-
-.bottom{
-  background:#003a8f;
-}
+.top{ background:#b5121b; }
+.bottom{ background:#003a8f; }
 
 .match{
   background:rgba(255,255,255,0.15);
   padding:14px;
   border-radius:14px;
-  margin:12px 0;
+  margin:14px 0;
 }
 
 .team{
   display:flex;
   align-items:center;
   gap:12px;
-  background:rgba(0,0,0,0.25);
+  background:rgba(0,0,0,0.35);
   padding:12px 14px;
   border-radius:10px;
   margin:6px 0;
   font-size:17px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.team:hover{
+  background:rgba(0,0,0,0.55);
+}
+
+.team.winner{
+  background:#00ff99;
+  color:#000;
+  font-weight:700;
 }
 
 .flag{
@@ -67,25 +73,35 @@ header{
   padding:30px;
 }
 
-.trophy{
-  font-size:90px;
+button{
+  padding:14px 40px;
+  font-size:18px;
+  border:none;
+  border-radius:30px;
+  background:#00ff99;
+  cursor:pointer;
+  margin-top:20px;
 }
 
-.subtitle{
-  font-size:18px;
-  opacity:0.8;
+button:disabled{
+  background:#555;
+  cursor:not-allowed;
+}
+
+.trophy{
+  font-size:80px;
 }
 
 @media(max-width:900px){
-  .bracket{grid-template-columns:1fr;}
-  .center{grid-column:1;}
+  .bracket{ grid-template-columns:1fr; }
+  .center{ grid-column:1; }
 }
 </style>
 </head>
 
 <body>
 
-<header>FIFA World Cup 2026 – Round of 32 Fixtures</header>
+<header>FIFA World Cup 2026 – Round of 32</header>
 
 <div class="bracket">
 
@@ -181,10 +197,38 @@ header{
 
 <div class="center">
   <div class="trophy">🏆</div>
-  <div class="subtitle">Road to World Champions</div>
+  <button id="nextBtn" disabled onclick="goNext()">Proceed to Round of 16</button>
 </div>
 
 </div>
+
+<script>
+const matches = document.querySelectorAll(".match");
+const nextBtn = document.getElementById("nextBtn");
+
+matches.forEach(match=>{
+  const teams = match.querySelectorAll(".team");
+  teams.forEach(team=>{
+    team.onclick = ()=>{
+      teams.forEach(t=>t.classList.remove("winner"));
+      team.classList.add("winner");
+      checkReady();
+    }
+  });
+});
+
+function checkReady(){
+  const winners = document.querySelectorAll(".winner");
+  nextBtn.disabled = winners.length !== 16;
+}
+
+function goNext(){
+  const winners = [...document.querySelectorAll(".winner")].map(t=>t.innerText.trim());
+  localStorage.setItem("wc2026_r32_winners", JSON.stringify(winners));
+  alert("Round of 16 ready 🔥");
+  // window.location.href = "round16.html";
+}
+</script>
 
 </body>
 </html>
