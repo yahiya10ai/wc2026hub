@@ -5,7 +5,7 @@
 <title>FIFA World Cup 2026 – Round of 32</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{
+body {
   margin:0;
   font-family:"Segoe UI", Arial, sans-serif;
   background:#0b0b0b;
@@ -18,151 +18,122 @@ header{
   font-weight:700;
   background:#111;
 }
-.bracket-container{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:20px;
-}
-.round{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  margin:20px 0;
+.container{
+  max-width:900px;
+  margin:20px auto;
+  padding:0 10px;
 }
 .match{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  margin:10px 0;
   background:rgba(255,255,255,0.1);
-  padding:8px 12px;
-  border-radius:10px;
+  padding:12px 16px;
+  margin:12px 0;
+  border-radius:12px;
 }
 .team{
   padding:8px 12px;
-  border-radius:6px;
+  border-radius:8px;
   background:rgba(0,0,0,0.3);
   cursor:pointer;
+  margin:6px 0;
   transition:0.2s;
 }
 .team:hover{
   background:rgba(0,0,0,0.5);
 }
-.team.winner{
+.team.selected{
   background:#00ff99;
   color:#000;
   font-weight:700;
 }
-.round-title{ font-size:22px; margin-bottom:10px; text-align:center; font-weight:600; }
-.center{
-  text-align:center;
-  margin:40px 0;
+.match-info{
+  font-size:14px;
+  margin-bottom:8px;
+  color:#aaa;
 }
-.trophy{
-  font-size:90px;
+button{
+  display:block;
+  margin:30px auto;
+  padding:14px 40px;
+  font-size:18px;
+  border:none;
+  border-radius:30px;
+  background:#00ff99;
+  cursor:pointer;
 }
-@media(max-width:900px){
-  .bracket-container{padding:10px;}
+button:disabled{
+  background:#555;
+  cursor:not-allowed;
+}
+@media(max-width:600px){
+  body{font-size:14px;}
+  button{width:100%; font-size:16px;}
 }
 </style>
 </head>
 <body>
-<header>FIFA World Cup 2026 – Bracket</header>
-<div class="bracket-container" id="bracket"></div>
-<div class="center">
-  <div class="trophy" id="trophy" style="display:none;">🏆</div>
-  <div id="winnerName" style="font-size:24px; margin-top:10px;"></div>
-</div>
+<header>FIFA World Cup 2026 – Round of 32</header>
+<div class="container" id="matchesContainer"></div>
+<button id="nextBtn" disabled onclick="proceedNext()">Proceed to Round of 16</button>
 
 <script>
-// Get R32 teams from group.html selections
-let r32Teams = JSON.parse(localStorage.getItem("wc2026_group_picks") || "[]"); 
-// For demo, if empty, fill with placeholder teams
-if(r32Teams.length!==32){
-  r32Teams = [
-    "Mexico","Japan","Canada","Switzerland","Brazil","Senegal","USA","Australia",
-    "Germany","Ecuador","Netherlands","South Korea","Belgium","New Zealand","Spain","Uruguay",
-    "France","Norway","Argentina","Jordan","Portugal","Colombia","England","Panama",
-    "Italy","Cameroon","Denmark","Iran","Costa Rica","Serbia","Morocco","Croatia"
-  ];
-}
-
-// Define bracket structure
-let rounds = [
-  {name:"Round of 32", matches: []},
-  {name:"Round of 16", matches: []},
-  {name:"Quarterfinals", matches: []},
-  {name:"Semifinals", matches: []},
-  {name:"Final", matches: []}
+// List of R32 matches exactly as per 2026 format
+const matches = [
+  {teams:["Group A 2nd","Group B 2nd"], date:"Monday, 29 June 2026", stadium:"Los Angeles Stadium"},
+  {teams:["Group E 1st","Group A/B/C/D/F 3rd"], date:"Monday, 29 June 2026", stadium:"Boston Stadium"},
+  {teams:["Group F 1st","Group C 2nd"], date:"Monday, 29 June 2026", stadium:"Estadio Monterrey"},
+  {teams:["Group C 1st","Group F 2nd"], date:"Monday, 29 June 2026", stadium:"Houston Stadium"},
+  {teams:["Group I 1st","Group C/D/F/G/H 3rd"], date:"Tuesday, 30 June 2026", stadium:"New York New Jersey Stadium"},
+  {teams:["Group E 2nd","Group I 2nd"], date:"Tuesday, 30 June 2026", stadium:"Dallas Stadium"},
+  {teams:["Group A 1st","Group C/E/F/H/I 3rd"], date:"Tuesday, 30 June 2026", stadium:"Mexico City Stadium"},
+  {teams:["Group L 1st","Group E/H/I/J/K 3rd"], date:"Wednesday, 1 July 2026", stadium:"Atlanta Stadium"},
+  {teams:["Group D 1st","Group B/E/F/I/J 3rd"], date:"Wednesday, 1 July 2026", stadium:"San Francisco Bay Area Stadium"},
+  {teams:["Group G 1st","Group A/E/H/I/J 3rd"], date:"Wednesday, 1 July 2026", stadium:"Seattle Stadium"},
+  {teams:["Group K 2nd","Group L 2nd"], date:"Thursday, 2 July 2026", stadium:"Toronto Stadium"},
+  {teams:["Group H 1st","Group J 2nd"], date:"Thursday, 2 July 2026", stadium:"Los Angeles Stadium"},
+  {teams:["Group B 1st","Group E/F/G/I/J 3rd"], date:"Thursday, 2 July 2026", stadium:"BC Place Vancouver"},
+  {teams:["Group J 1st","Group H 2nd"], date:"Friday, 3 July 2026", stadium:"Miami Stadium"},
+  {teams:["Group K 1st","Group D/E/I/J/L 3rd"], date:"Friday, 3 July 2026", stadium:"Kansas City Stadium"},
+  {teams:["Group D 2nd","Group G 2nd"], date:"Friday, 3 July 2026", stadium:"Dallas Stadium"},
 ];
 
-// Build R32 matches
-for(let i=0;i<32;i+=2){
-  rounds[0].matches.push([r32Teams[i],r32Teams[i+1]]);
-}
+// Render matches
+const container = document.getElementById("matchesContainer");
 
-// Empty matches for next rounds
-rounds[1].matches = Array(8).fill(["",""]);
-rounds[2].matches = Array(4).fill(["",""]);
-rounds[3].matches = Array(2).fill(["",""]);
-rounds[4].matches = [["",""]];
-
-// Render bracket
-const bracketDiv = document.getElementById("bracket");
-
-function renderBracket(){
-  bracketDiv.innerHTML="";
-  rounds.forEach((round,rIndex)=>{
-    const roundDiv = document.createElement("div");
-    roundDiv.className="round";
-    const title = document.createElement("div");
-    title.className="round-title";
-    title.textContent = round.name;
-    roundDiv.appendChild(title);
-
-    round.matches.forEach((match,mIndex)=>{
-      const matchDiv = document.createElement("div");
-      matchDiv.className="match";
-      match.forEach((teamName,tIndex)=>{
-        if(teamName==="") return;
-        const teamDiv = document.createElement("div");
-        teamDiv.className="team";
-        teamDiv.textContent = teamName;
-        teamDiv.onclick = ()=>{
-          selectWinner(rIndex,mIndex,tIndex,teamDiv);
-        }
-        matchDiv.appendChild(teamDiv);
-      });
-      roundDiv.appendChild(matchDiv);
-    });
-    bracketDiv.appendChild(roundDiv);
+matches.forEach((m,index)=>{
+  const matchDiv = document.createElement("div");
+  matchDiv.className="match";
+  const info = document.createElement("div");
+  info.className="match-info";
+  info.textContent=`Match ${73+index} – ${m.date} – ${m.stadium}`;
+  matchDiv.appendChild(info);
+  m.teams.forEach(team=>{
+    const teamDiv = document.createElement("div");
+    teamDiv.className="team";
+    teamDiv.textContent=team;
+    teamDiv.onclick = ()=>{
+      matchDiv.querySelectorAll(".team").forEach(t=>t.classList.remove("selected"));
+      teamDiv.classList.add("selected");
+      checkAllSelected();
+    }
+    matchDiv.appendChild(teamDiv);
   });
+  container.appendChild(matchDiv);
+});
+
+// Enable next button only when all matches selected
+function checkAllSelected(){
+  const allSelected = [...document.querySelectorAll(".match")].every(m=>m.querySelector(".team.selected"));
+  document.getElementById("nextBtn").disabled = !allSelected;
 }
 
-function selectWinner(roundIndex,matchIndex,teamIndex,teamDiv){
-  const matchDiv = teamDiv.parentElement;
-  matchDiv.querySelectorAll(".team").forEach(t=>t.classList.remove("winner"));
-  teamDiv.classList.add("winner");
-
-  // advance winner
-  if(roundIndex<rounds.length-1){
-    const nextRound = rounds[roundIndex+1];
-    const nextMatchIndex = Math.floor(matchIndex/2);
-    const slot = matchIndex%2;
-    nextRound.matches[nextMatchIndex][slot] = rounds[roundIndex].matches[matchIndex][teamIndex];
-    renderBracket();
-  }
-
-  // Check final winner
-  const finalMatch = rounds[4].matches[0];
-  if(finalMatch[0]!=="" && finalMatch[1]!=="" && document.querySelectorAll(".round:nth-child(5) .winner").length>0){
-    document.getElementById("trophy").style.display="block";
-    document.getElementById("winnerName").textContent=finalMatch[0]; 
-  }
+// Save winners and proceed
+function proceedNext(){
+  const winners = [...document.querySelectorAll(".match")].map(m=>m.querySelector(".team.selected").textContent);
+  localStorage.setItem("wc2026_r32_winners",JSON.stringify(winners));
+  alert("Winners saved! Proceeding to Round of 16.");
+  // Redirect to R16 page
+  window.location.href = "round16.html";
 }
-
-renderBracket();
 </script>
 </body>
 </html>
