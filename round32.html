@@ -5,69 +5,17 @@
 <title>FIFA World Cup 2026 – Round of 32</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {
-  margin:0;
-  font-family:"Segoe UI", Arial, sans-serif;
-  background:#0b0b0b;
-  color:#fff;
-}
-header{
-  text-align:center;
-  padding:20px;
-  font-size:28px;
-  font-weight:700;
-  background:#111;
-}
-.container{
-  max-width:900px;
-  margin:20px auto;
-  padding:0 10px;
-}
-.match{
-  background:rgba(255,255,255,0.1);
-  padding:12px 16px;
-  margin:12px 0;
-  border-radius:12px;
-}
-.team{
-  padding:8px 12px;
-  border-radius:8px;
-  background:rgba(0,0,0,0.3);
-  cursor:pointer;
-  margin:6px 0;
-  transition:0.2s;
-}
-.team:hover{
-  background:rgba(0,0,0,0.5);
-}
-.team.selected{
-  background:#00ff99;
-  color:#000;
-  font-weight:700;
-}
-.match-info{
-  font-size:14px;
-  margin-bottom:8px;
-  color:#aaa;
-}
-button{
-  display:block;
-  margin:30px auto;
-  padding:14px 40px;
-  font-size:18px;
-  border:none;
-  border-radius:30px;
-  background:#00ff99;
-  cursor:pointer;
-}
-button:disabled{
-  background:#555;
-  cursor:not-allowed;
-}
-@media(max-width:600px){
-  body{font-size:14px;}
-  button{width:100%; font-size:16px;}
-}
+body { margin:0; font-family:"Segoe UI", Arial, sans-serif; background:#0b0b0b; color:#fff; }
+header{ text-align:center; padding:20px; font-size:28px; font-weight:700; background:#111; }
+.container{ max-width:900px; margin:20px auto; padding:0 10px; }
+.match{ background:rgba(255,255,255,0.1); padding:12px 16px; margin:12px 0; border-radius:12px; }
+.team{ padding:8px 12px; border-radius:8px; background:rgba(0,0,0,0.3); cursor:pointer; margin:6px 0; transition:0.2s; }
+.team:hover{ background:rgba(0,0,0,0.5); }
+.team.selected{ background:#00ff99; color:#000; font-weight:700; }
+.match-info{ font-size:14px; margin-bottom:8px; color:#aaa; }
+button{ display:block; margin:30px auto; padding:14px 40px; font-size:18px; border:none; border-radius:30px; background:#00ff99; cursor:pointer; }
+button:disabled{ background:#555; cursor:not-allowed; }
+@media(max-width:600px){ body{font-size:14px;} button{width:100%; font-size:16px;} }
 </style>
 </head>
 <body>
@@ -76,50 +24,55 @@ button:disabled{
 <button id="nextBtn" disabled onclick="proceedNext()">Proceed to Round of 16</button>
 
 <script>
-// Get group picks from localStorage
-// Structure: {A:["A1","A2","A3"], B:["B1","B2","B3"], ...}
-const groups = JSON.parse(localStorage.getItem("wc2026_group_picks") || "{}");
+// ---- Load actual group picks from group.html ----
+// Must be saved as an array of objects:
+// [
+//   { group:"A", first:"Mexico", second:"Canada", third:"Japan" },
+//   { group:"B", first:"Brazil", second:"USA", third:"Australia" },
+//   ...
+// ]
+const groupPicks = JSON.parse(localStorage.getItem("wc2026_group_picks") || "[]");
 
-// If no picks, fill placeholders
-const groupKeys = ["A","B","C","D","E","F","G","H","I","J","K","L"];
-groupKeys.forEach(k=>{
-  if(!groups[k]) groups[k]=[k+"1", k+"2", k+"3"];
-});
+// Helper: get group by letter
+function getGroup(name){
+  return groupPicks.find(g=>g.group===name) || {first:name+"1", second:name+"2", third:name+"3"};
+}
 
-// Build R32 matches exactly
+// Build R32 matches 73–88
 const matches = [
-  {teams:[groups.A[1], groups.B[1]], date:"Monday, 29 June 2026", stadium:"Los Angeles Stadium"},
-  {teams:[groups.E[0], groups.A[2]], date:"Monday, 29 June 2026", stadium:"Boston Stadium"},
-  {teams:[groups.F[0], groups.C[1]], date:"Monday, 29 June 2026", stadium:"Estadio Monterrey"},
-  {teams:[groups.C[0], groups.F[1]], date:"Monday, 29 June 2026", stadium:"Houston Stadium"},
-  {teams:[groups.I[0], groups.C[2]], date:"Tuesday, 30 June 2026", stadium:"New York New Jersey Stadium"},
-  {teams:[groups.E[1], groups.I[1]], date:"Tuesday, 30 June 2026", stadium:"Dallas Stadium"},
-  {teams:[groups.A[0], groups.E[2]], date:"Tuesday, 30 June 2026", stadium:"Mexico City Stadium"},
-  {teams:[groups.L[0], groups.E[2]], date:"Wednesday, 1 July 2026", stadium:"Atlanta Stadium"},
-  {teams:[groups.D[0], groups.B[2]], date:"Wednesday, 1 July 2026", stadium:"San Francisco Bay Area Stadium"},
-  {teams:[groups.G[0], groups.A[2]], date:"Wednesday, 1 July 2026", stadium:"Seattle Stadium"},
-  {teams:[groups.K[1], groups.L[1]], date:"Thursday, 2 July 2026", stadium:"Toronto Stadium"},
-  {teams:[groups.H[0], groups.J[1]], date:"Thursday, 2 July 2026", stadium:"Los Angeles Stadium"},
-  {teams:[groups.B[0], groups.E[2]], date:"Thursday, 2 July 2026", stadium:"BC Place Vancouver"},
-  {teams:[groups.J[0], groups.H[1]], date:"Friday, 3 July 2026", stadium:"Miami Stadium"},
-  {teams:[groups.K[0], groups.D[2]], date:"Friday, 3 July 2026", stadium:"Kansas City Stadium"},
-  {teams:[groups.D[1], groups.G[1]], date:"Friday, 3 July 2026", stadium:"Dallas Stadium"},
+  {teams:[getGroup("A").second,getGroup("B").second], date:"Monday, 29 June 2026", stadium:"Los Angeles Stadium"},
+  {teams:[getGroup("E").first,getGroup("A").third], date:"Monday, 29 June 2026", stadium:"Boston Stadium"},
+  {teams:[getGroup("F").first,getGroup("C").second], date:"Monday, 29 June 2026", stadium:"Estadio Monterrey"},
+  {teams:[getGroup("C").first,getGroup("F").second], date:"Monday, 29 June 2026", stadium:"Houston Stadium"},
+  {teams:[getGroup("I").first,getGroup("C").third], date:"Tuesday, 30 June 2026", stadium:"New York New Jersey Stadium"},
+  {teams:[getGroup("E").second,getGroup("I").second], date:"Tuesday, 30 June 2026", stadium:"Dallas Stadium"},
+  {teams:[getGroup("A").first,getGroup("E").third], date:"Tuesday, 30 June 2026", stadium:"Mexico City Stadium"},
+  {teams:[getGroup("L").first,getGroup("E").third], date:"Wednesday, 1 July 2026", stadium:"Atlanta Stadium"},
+  {teams:[getGroup("D").first,getGroup("B").third], date:"Wednesday, 1 July 2026", stadium:"San Francisco Bay Area Stadium"},
+  {teams:[getGroup("G").first,getGroup("A").third], date:"Wednesday, 1 July 2026", stadium:"Seattle Stadium"},
+  {teams:[getGroup("K").second,getGroup("L").second], date:"Thursday, 2 July 2026", stadium:"Toronto Stadium"},
+  {teams:[getGroup("H").first,getGroup("J").second], date:"Thursday, 2 July 2026", stadium:"Los Angeles Stadium"},
+  {teams:[getGroup("B").first,getGroup("E").third], date:"Thursday, 2 July 2026", stadium:"BC Place Vancouver"},
+  {teams:[getGroup("J").first,getGroup("H").second], date:"Friday, 3 July 2026", stadium:"Miami Stadium"},
+  {teams:[getGroup("K").first,getGroup("D").third], date:"Friday, 3 July 2026", stadium:"Kansas City Stadium"},
+  {teams:[getGroup("D").second,getGroup("G").second], date:"Friday, 3 July 2026", stadium:"Dallas Stadium"},
 ];
 
-// Render matches
+// ---- Render matches ----
 const container = document.getElementById("matchesContainer");
-
 matches.forEach((m,index)=>{
   const matchDiv = document.createElement("div");
   matchDiv.className="match";
+  
   const info = document.createElement("div");
   info.className="match-info";
   info.textContent=`Match ${73+index} – ${m.date} – ${m.stadium}`;
   matchDiv.appendChild(info);
+  
   m.teams.forEach(team=>{
     const teamDiv = document.createElement("div");
     teamDiv.className="team";
-    teamDiv.textContent=team;
+    teamDiv.textContent = team;
     teamDiv.onclick = ()=>{
       matchDiv.querySelectorAll(".team").forEach(t=>t.classList.remove("selected"));
       teamDiv.classList.add("selected");
@@ -130,13 +83,13 @@ matches.forEach((m,index)=>{
   container.appendChild(matchDiv);
 });
 
-// Enable next button only when all matches selected
+// ---- Enable next button only when all matches are selected ----
 function checkAllSelected(){
   const allSelected = [...document.querySelectorAll(".match")].every(m=>m.querySelector(".team.selected"));
   document.getElementById("nextBtn").disabled = !allSelected;
 }
 
-// Save winners and proceed
+// ---- Save winners and proceed to Round of 16 ----
 function proceedNext(){
   const winners = [...document.querySelectorAll(".match")].map(m=>m.querySelector(".team.selected").textContent);
   localStorage.setItem("wc2026_r32_winners",JSON.stringify(winners));
