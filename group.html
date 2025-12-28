@@ -8,7 +8,7 @@
 body { font-family:"Segoe UI", Arial, sans-serif; background:#0b0b0b; color:#fff; margin:0; }
 header { text-align:center; padding:20px; font-size:28px; font-weight:700; background:#111; }
 .container { max-width:900px; margin:20px auto; padding:0 10px; }
-.group { background: rgba(255,255,255,0.1); padding:12px 16px; margin:12px 0; border-radius:12px; }
+.group { background:rgba(255,255,255,0.1); padding:12px 16px; margin:12px 0; border-radius:12px; }
 .team { padding:8px 12px; margin:6px 0; border-radius:8px; cursor:pointer; background:rgba(0,0,0,0.3); transition:0.2s; }
 .team:hover { background:rgba(0,0,0,0.5); }
 .team.selected { background:#00ff99; color:#000; font-weight:700; }
@@ -24,48 +24,42 @@ button:disabled { background:#555; cursor:not-allowed; }
 <button id="nextBtn" disabled onclick="proceedNext()">Proceed to Round of 32</button>
 
 <script>
-// List of groups and teams (example – replace with actual teams)
 const groupsData = {
-  A:["Mexico","Canada","Japan","Saudi Arabia"],
-  B:["Brazil","USA","Australia","Ghana"],
-  C:["Germany","Netherlands","South Korea","Senegal"],
-  D:["Argentina","Poland","Qatar","Tunisia"],
-  E:["Spain","France","Morocco","Belgium"],
-  F:["Portugal","Italy","Ghana","Switzerland"],
-  G:["England","Senegal","Japan","Cameroon"],
-  H:["Uruguay","Cameroon","Tunisia","Ecuador"],
-  I:["Colombia","South Korea","Canada","Saudi Arabia"],
-  J:["Croatia","Switzerland","Mexico","Iran"],
-  K:["Denmark","Nigeria","Japan","USA"],
-  L:["Belgium","USA","Poland","Morocco"]
+  A:["Mexico","South Africa","South Korea","Playoff D Winner"],
+  B:["Canada","Switzerland","Qatar","Playoff A Winner"],
+  C:["Brazil","Morocco","Haiti","Scotland"],
+  D:["United States","Paraguay","Australia","Playoff C Winner"],
+  E:["Germany","Ecuador","Ivory Coast","Curaçao"],
+  F:["Netherlands","Japan","Playoff B Winner","Tunisia"],
+  G:["Belgium","Egypt","Iran","New Zealand"],
+  H:["Spain","Uruguay","Saudi Arabia","Cabo Verde"],
+  I:["France","Senegal","Norway","Playoff 2 Winner"],
+  J:["Argentina","Algeria","Austria","Jordan"],
+  K:["Portugal","Colombia","Uzbekistan","Playoff 1 Winner"],
+  L:["England","Croatia","Ghana","Panama"]
 };
 
-// Track picks
 const groupPicks = {};
-
 const container = document.getElementById("groupsContainer");
 
 Object.keys(groupsData).forEach(group=>{
   const groupDiv = document.createElement("div");
   groupDiv.className="group";
-  
+
   const title = document.createElement("div");
   title.className="group-name";
   title.textContent="Group "+group;
   groupDiv.appendChild(title);
-  
-  const teams = groupsData[group];
-  // Create clickable team divs for first, second, third
-  teams.forEach(team=>{
+
+  groupsData[group].forEach(team=>{
     const teamDiv = document.createElement("div");
     teamDiv.className="team";
     teamDiv.textContent=team;
-    teamDiv.onclick = ()=>{
+    teamDiv.onclick=()=>{
       if(!groupPicks[group]) groupPicks[group]=[];
-      // Add/remove selection
-      const index = groupPicks[group].indexOf(team);
-      if(index>-1) {
-        groupPicks[group].splice(index,1);
+      const idx = groupPicks[group].indexOf(team);
+      if(idx>-1){
+        groupPicks[group].splice(idx,1);
         teamDiv.classList.remove("selected");
       } else {
         if(groupPicks[group].length<3){
@@ -77,25 +71,23 @@ Object.keys(groupsData).forEach(group=>{
     }
     groupDiv.appendChild(teamDiv);
   });
+
   container.appendChild(groupDiv);
 });
 
-// Enable next button only if all groups have 3 picks
 function checkAllSelected(){
-  const allDone = Object.keys(groupsData).every(g=>groupPicks[g] && groupPicks[g].length===3);
+  const allDone = Object.keys(groupsData).every(g=>groupPicks[g]?.length===3);
   document.getElementById("nextBtn").disabled = !allDone;
 }
 
-// Save picks and go to R32
 function proceedNext(){
-  // Save as array of objects for round32.html
   const picksArray = Object.keys(groupPicks).map(g=>({
     group:g,
     first:groupPicks[g][0],
     second:groupPicks[g][1],
     third:groupPicks[g][2]
   }));
-  localStorage.setItem("wc2026_group_picks",JSON.stringify(picksArray));
+  localStorage.setItem("wc2026_group_picks", JSON.stringify(picksArray));
   window.location.href="round32.html";
 }
 </script>
