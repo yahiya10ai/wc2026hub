@@ -24,21 +24,19 @@ button:disabled{ background:#555; cursor:not-allowed; }
 <button id="nextBtn" disabled onclick="proceedNext()">Proceed to Round of 16</button>
 
 <script>
-// Load group picks
+// Load picks
 const groupPicks = JSON.parse(localStorage.getItem("wc2026_group_picks")||"[]");
-function getGroup(name){
-  return groupPicks.find(g=>g.group===name) || {first:name+"1", second:name+"2", third:name+"3"};
-}
+function getGroup(name){ return groupPicks.find(g=>g.group===name)||{first:name+"1",second:name+"2",third:name+"3"}; }
 
-// Build R32 matches 73–88
+// Official R32 fixture list
 const matches = [
-  {teams:[getGroup("A").second,getGroup("B").second], date:"Monday, 29 June 2026", stadium:"Los Angeles Stadium"},
+  {teams:[getGroup("A").second,getGroup("B").second], date:"Sunday, 28 June 2026", stadium:"Los Angeles Stadium"},
   {teams:[getGroup("E").first,getGroup("A").third], date:"Monday, 29 June 2026", stadium:"Boston Stadium"},
   {teams:[getGroup("F").first,getGroup("C").second], date:"Monday, 29 June 2026", stadium:"Estadio Monterrey"},
   {teams:[getGroup("C").first,getGroup("F").second], date:"Monday, 29 June 2026", stadium:"Houston Stadium"},
   {teams:[getGroup("I").first,getGroup("C").third], date:"Tuesday, 30 June 2026", stadium:"New York New Jersey Stadium"},
   {teams:[getGroup("E").second,getGroup("I").second], date:"Tuesday, 30 June 2026", stadium:"Dallas Stadium"},
-  {teams:[getGroup("A").first,getGroup("E").third], date:"Tuesday, 30 June 2026", stadium:"Mexico City Stadium"},
+  {teams:[getGroup("A").first,getGroup("C").third], date:"Tuesday, 30 June 2026", stadium:"Mexico City Stadium"},
   {teams:[getGroup("L").first,getGroup("E").third], date:"Wednesday, 1 July 2026", stadium:"Atlanta Stadium"},
   {teams:[getGroup("D").first,getGroup("B").third], date:"Wednesday, 1 July 2026", stadium:"San Francisco Bay Area Stadium"},
   {teams:[getGroup("G").first,getGroup("A").third], date:"Wednesday, 1 July 2026", stadium:"Seattle Stadium"},
@@ -52,37 +50,35 @@ const matches = [
 
 // Render matches
 const container = document.getElementById("matchesContainer");
-matches.forEach((m,index)=>{
+matches.forEach((m,i)=>{
   const matchDiv = document.createElement("div");
   matchDiv.className="match";
   const info = document.createElement("div");
   info.className="match-info";
-  info.textContent=`Match ${73+index} – ${m.date} – ${m.stadium}`;
+  info.textContent=`Match ${73+i} – ${m.date} – ${m.stadium}`;
   matchDiv.appendChild(info);
-  
   m.teams.forEach(team=>{
-    const teamDiv = document.createElement("div");
-    teamDiv.className="team";
-    teamDiv.textContent = team;
-    teamDiv.onclick = ()=>{
+    const d=document.createElement("div");
+    d.className="team";
+    d.textContent=team;
+    d.onclick=()=>{
       matchDiv.querySelectorAll(".team").forEach(t=>t.classList.remove("selected"));
-      teamDiv.classList.add("selected");
+      d.classList.add("selected");
       checkAllSelected();
     }
-    matchDiv.appendChild(teamDiv);
+    matchDiv.appendChild(d);
   });
   container.appendChild(matchDiv);
 });
 
-// Enable next button only when all matches selected
 function checkAllSelected(){
-  const allSelected = [...document.querySelectorAll(".match")].every(m=>m.querySelector(".team.selected"));
-  document.getElementById("nextBtn").disabled = !allSelected;
+  const allSelected=[...document.querySelectorAll(".match")].every(m=>m.querySelector(".team.selected"));
+  document.getElementById("nextBtn").disabled=!allSelected;
 }
 
-// Save winners and proceed
 function proceedNext(){
-  const winners = [...document.querySelectorAll(".match")].map(m=>m.querySelector(".team.selected").textContent);
+  const winners=[...document.querySelectorAll(".match")]
+    .map(m=>m.querySelector(".team.selected").textContent);
   localStorage.setItem("wc2026_r32_winners",JSON.stringify(winners));
   window.location.href="round16.html";
 }
