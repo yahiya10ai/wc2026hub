@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>FIFA World Cup 2026 – Round of 32</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WC 2026 – Round of 32</title>
 
 <style>
 body{
@@ -11,28 +11,39 @@ body{
   font-family:Arial, sans-serif;
   background:#0b0b0b;
   color:#fff;
-  padding:20px;
 }
 h1{
   text-align:center;
-  color:#00ff99;
-  margin-bottom:30px;
+  padding:20px;
+  background:#111;
+  margin:0;
 }
 .bracket{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  grid-template-columns:1fr 1fr;
   gap:20px;
+  padding:20px;
+}
+.side{
+  display:grid;
+  grid-template-rows:repeat(8,auto);
+  gap:14px;
 }
 .match{
-  background:#111;
-  padding:15px;
-  border-radius:12px;
+  background:#161616;
+  padding:10px;
+  border-radius:10px;
+}
+.label{
+  font-size:12px;
+  color:#aaa;
+  margin-bottom:6px;
 }
 .team{
-  background:#222;
-  padding:12px;
+  background:#262626;
+  padding:10px;
   border-radius:8px;
-  margin:8px 0;
+  margin:6px 0;
   text-align:center;
   cursor:pointer;
 }
@@ -41,16 +52,23 @@ h1{
   color:#000;
   font-weight:bold;
 }
-#nextBtn{
-  display:block;
-  margin:40px auto 0;
-  padding:15px 40px;
+.center{
+  grid-column:1 / span 2;
+  text-align:center;
+  margin-top:20px;
+}
+button{
+  padding:14px 40px;
   font-size:18px;
   border:none;
   border-radius:30px;
   background:#00ff99;
-  color:#000;
   cursor:pointer;
+}
+@media(max-width:768px){
+  .bracket{
+    grid-template-columns:1fr;
+  }
 }
 </style>
 </head>
@@ -59,88 +77,103 @@ h1{
 
 <h1>🏆 FIFA World Cup 2026 – Round of 32</h1>
 
-<div class="bracket" id="bracket"></div>
+<div class="bracket">
 
-<button id="nextBtn">Proceed to Round of 16 ➜</button>
+  <!-- LEFT SIDE (GROUP A–F) -->
+  <div class="side" id="leftSide"></div>
+
+  <!-- RIGHT SIDE (GROUP G–L) -->
+  <div class="side" id="rightSide"></div>
+
+  <div class="center">
+    <button onclick="goNext()">Proceed to Round of 16 ➜</button>
+  </div>
+
+</div>
 
 <script>
-/* ===== LOAD GROUP DATA ===== */
-const groupData = JSON.parse(localStorage.getItem("wc2026_groups"));
-
-if(!groupData){
-  alert("No group data found!");
+// ===== LOAD GROUP DATA =====
+const groups = JSON.parse(localStorage.getItem("wc2026_groups"));
+if(!groups){
+  alert("Group data missing");
 }
 
-/* ===== GET QUALIFIED TEAMS ===== */
-let qualified = [];
+// ===== EXTRACT TEAMS =====
+const A1=groups.A.first, A2=groups.A.second;
+const B1=groups.B.first, B2=groups.B.second;
+const C1=groups.C.first, C2=groups.C.second;
+const D1=groups.D.first, D2=groups.D.second;
+const E1=groups.E.first, E2=groups.E.second;
+const F1=groups.F.first, F2=groups.F.second;
 
-// 1st & 2nd from all groups
-Object.values(groupData).forEach(g=>{
-  qualified.push(g.first);
-  qualified.push(g.second);
-});
+const G1=groups.G.first, G2=groups.G.second;
+const H1=groups.H.first, H2=groups.H.second;
+const I1=groups.I.first, I2=groups.I.second;
+const J1=groups.J.first, J2=groups.J.second;
+const K1=groups.K.first, K2=groups.K.second;
+const L1=groups.L.first, L2=groups.L.second;
 
-// 8 third-place teams
-Object.values(groupData).forEach(g=>{
-  if(g.third) qualified.push(g.third);
-});
+// Best 8 third-placed teams (already selected in group page)
+const thirds = JSON.parse(localStorage.getItem("wc2026_bestThirds"));
 
-// Ensure 32 teams
-qualified = qualified.slice(0,32);
+// ===== OFFICIAL-STYLE MATCHUPS =====
+const leftMatches = [
+  ["A1", A1, "3rd", thirds[0]],
+  ["B2", B2, "C2", C2],
+  ["C1", C1, "3rd", thirds[1]],
+  ["A2", A2, "B1", B1],
+  ["D1", D1, "3rd", thirds[2]],
+  ["E2", E2, "F2", F2],
+  ["E1", E1, "3rd", thirds[3]],
+  ["D2", D2, "F1", F1],
+];
 
-/* ===== CREATE MATCHES ===== */
-const bracket = document.getElementById("bracket");
-let winners = [];
+const rightMatches = [
+  ["G1", G1, "3rd", thirds[4]],
+  ["H2", H2, "I2", I2],
+  ["I1", I1, "3rd", thirds[5]],
+  ["G2", G2, "H1", H1],
+  ["J1", J1, "3rd", thirds[6]],
+  ["K2", K2, "L2", L2],
+  ["K1", K1, "3rd", thirds[7]],
+  ["J2", J2, "L1", L1],
+];
 
-for(let i=0;i<qualified.length;i+=2){
-  const match=document.createElement("div");
-  match.className="match";
-
-  const t1=document.createElement("div");
-  t1.className="team";
-  t1.innerText=qualified[i];
-
-  const t2=document.createElement("div");
-  t2.className="team";
-  t2.innerText=qualified[i+1];
-
-  t1.onclick=()=>selectWinner(t1,t2);
-  t2.onclick=()=>selectWinner(t2,t1);
-
-  match.appendChild(t1);
-  match.appendChild(t2);
-  bracket.appendChild(match);
-}
-
-/* ===== SELECT WINNER ===== */
-function selectWinner(win,lose){
-  win.classList.add("winner");
-  lose.classList.remove("winner");
-
-  const match = win.parentElement;
-  const teams = match.querySelectorAll(".team");
-
-  teams.forEach(t=>{
-    if(t!==win) t.classList.remove("winner");
+// ===== RENDER FUNCTION =====
+function render(matches, container){
+  matches.forEach(m=>{
+    const div=document.createElement("div");
+    div.className="match";
+    div.innerHTML=`
+      <div class="label">${m[0]} vs ${m[2]}</div>
+      <div class="team" onclick="select(this)">${m[1]}</div>
+      <div class="team" onclick="select(this)">${m[3]}</div>
+    `;
+    container.appendChild(div);
   });
 }
 
-/* ===== NEXT BUTTON ===== */
-document.getElementById("nextBtn").onclick=()=>{
-  winners=[];
-  document.querySelectorAll(".winner").forEach(w=>{
-    winners.push(w.innerText);
-  });
+render(leftMatches, document.getElementById("leftSide"));
+render(rightMatches, document.getElementById("rightSide"));
 
+// ===== SELECT WINNER =====
+function select(el){
+  const siblings=el.parentElement.querySelectorAll(".team");
+  siblings.forEach(s=>s.classList.remove("winner"));
+  el.classList.add("winner");
+}
+
+// ===== NEXT ROUND =====
+function goNext(){
+  const winners=[...document.querySelectorAll(".winner")].map(w=>w.innerText);
   if(winners.length!==16){
-    alert("Please select winners for all matches.");
+    alert("Select all match winners");
     return;
   }
-
   localStorage.setItem("wc2026_r32",JSON.stringify(winners));
-  alert("Round of 16 coming next 🔥");
-  // window.location.href="round16.html"; (next step)
-};
+  alert("Round of 16 ready 🔥");
+  // window.location.href="round16.html";
+}
 </script>
 
 </body>
