@@ -24,16 +24,8 @@ button:disabled{ background:#555; cursor:not-allowed; }
 <button id="nextBtn" disabled onclick="proceedNext()">Proceed to Round of 16</button>
 
 <script>
-// ---- Load actual group picks from group.html ----
-// Must be saved as an array of objects:
-// [
-//   { group:"A", first:"Mexico", second:"Canada", third:"Japan" },
-//   { group:"B", first:"Brazil", second:"USA", third:"Australia" },
-//   ...
-// ]
-const groupPicks = JSON.parse(localStorage.getItem("wc2026_group_picks") || "[]");
-
-// Helper: get group by letter
+// Load group picks
+const groupPicks = JSON.parse(localStorage.getItem("wc2026_group_picks")||"[]");
 function getGroup(name){
   return groupPicks.find(g=>g.group===name) || {first:name+"1", second:name+"2", third:name+"3"};
 }
@@ -58,12 +50,11 @@ const matches = [
   {teams:[getGroup("D").second,getGroup("G").second], date:"Friday, 3 July 2026", stadium:"Dallas Stadium"},
 ];
 
-// ---- Render matches ----
+// Render matches
 const container = document.getElementById("matchesContainer");
 matches.forEach((m,index)=>{
   const matchDiv = document.createElement("div");
   matchDiv.className="match";
-  
   const info = document.createElement("div");
   info.className="match-info";
   info.textContent=`Match ${73+index} – ${m.date} – ${m.stadium}`;
@@ -83,18 +74,17 @@ matches.forEach((m,index)=>{
   container.appendChild(matchDiv);
 });
 
-// ---- Enable next button only when all matches are selected ----
+// Enable next button only when all matches selected
 function checkAllSelected(){
   const allSelected = [...document.querySelectorAll(".match")].every(m=>m.querySelector(".team.selected"));
   document.getElementById("nextBtn").disabled = !allSelected;
 }
 
-// ---- Save winners and proceed to Round of 16 ----
+// Save winners and proceed
 function proceedNext(){
   const winners = [...document.querySelectorAll(".match")].map(m=>m.querySelector(".team.selected").textContent);
   localStorage.setItem("wc2026_r32_winners",JSON.stringify(winners));
-  alert("Winners saved! Proceeding to Round of 16.");
-  window.location.href = "round16.html";
+  window.location.href="round16.html";
 }
 </script>
 </body>
