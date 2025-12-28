@@ -3,151 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WC 2026 Group Stage</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<title>FIFA World Cup 2026 – Group Stage</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-body{background:#0b0b0b;color:#fff;padding:20px;}
-h1{text-align:center;color:#00ff99;margin-bottom:30px;font-size:2rem;}
-.group-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:25px;max-width:1200px;margin:0 auto;}
-.group{background:#111;padding:20px;border-radius:20px;box-shadow:0 0 20px #000;}
-.group h2{color:#00ff99;margin-bottom:15px;text-align:center;font-size:1.2rem;}
-.team{background:#222;padding:12px;border-radius:15px;margin:8px 0;text-align:center;cursor:pointer;position:relative;transition:0.3s;border:2px solid transparent;}
-.team:hover{transform:translateY(-3px);}
-.rank{position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:15px;font-size:0.7rem;font-weight:600;}
-.first{border-color:#ffd700;box-shadow:0 0 10px #ffd700;}
-.first .rank{background:#ffd700;color:#000;}
-.second{border-color:#c0c0c0;box-shadow:0 0 10px #c0c0c0;}
-.second .rank{background:#c0c0c0;color:#000;}
-.third{border-color:#cd7f32;box-shadow:0 0 10px #cd7f32;}
-.third .rank{background:#cd7f32;color:#000;}
-.third.disabled{opacity:0.5;pointer-events:none;}
-#nextBtn{display:block;margin:50px auto;padding:18px 60px;font-size:1.2rem;font-weight:600;background:#00ff99;color:#000;border:none;border-radius:50px;cursor:not-allowed;opacity:0.4;transition:0.3s;}
-#nextBtn.active{opacity:1;cursor:pointer;box-shadow:0 0 20px #00ff99;}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0b0b0b;
+  color:#fff;
+  padding:20px;
+}
+h1{
+  text-align:center;
+  color:#00ff99;
+  margin-bottom:30px;
+}
+.groups{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+.group{
+  background:#111;
+  padding:15px;
+  border-radius:12px;
+}
+.group h2{
+  text-align:center;
+  color:#00ff99;
+  margin-bottom:10px;
+}
+.team{
+  background:#222;
+  padding:10px;
+  margin:8px 0;
+  border-radius:8px;
+  cursor:pointer;
+  text-align:center;
+}
+.first{background:#ffd700;color:#000;}
+.second{background:#c0c0c0;color:#000;}
+.third{background:#cd7f32;color:#000;}
+
+#nextBtn{
+  margin:40px auto 0;
+  display:block;
+  padding:15px 40px;
+  font-size:18px;
+  border:none;
+  border-radius:30px;
+  background:#00ff99;
+  color:#000;
+  cursor:pointer;
+}
 </style>
 </head>
+
 <body>
 
-<h1>WC 2026 Group Stage</h1>
-<div class="group-container" id="groups"></div>
+<h1>🏆 FIFA World Cup 2026 – Group Stage</h1>
 
-<button id="nextBtn">Proceed to Round of 32</button>
-  
-  <script>
+<div class="groups" id="groups"></div>
+
+<button id="nextBtn">Proceed to Round of 32 ➜</button>
+
+<script>
+/* ===== OFFICIAL WC 2026 GROUP DATA (A–L) ===== */
 const groupData = {
-A:["Mexico","South Africa","Korea Republic","Czech/Den/Iran/MKD"],
-B:["Canada","BiH/Italy/NIR/WAL","Qatar","Switzerland"],
-C:["Brazil","Morocco","Haiti","Scotland"],
-D:["USA","Paraguay","Australia","KOS/BUL/SVK/TUR"],
-E:["Germany","Curacao","Côte d’Ivoire","Ecuador"],
-F:["Netherlands","Japan","ALB/POL/SWE/UKR","Tunisia"],
-G:["Belgium","Egypt","Iran","New Zealand"],
-H:["Spain","Cabo Verde","Saudi Arabia","Uruguay"],
-I:["France","Senegal","BOL/IRQ/SUR","Norway"],
-J:["Argentina","Algeria","Austria","Jordan"],
-K:["Portugal","COD/JAM/NCL","Uzbekistan","Colombia"],
-L:["England","Croatia","Ghana","Panama"]
+  A:["Mexico","South Africa","Korea Republic","Czechia/Denmark/Iran/North Macedonia"],
+  B:["Canada","Italy/Wales/Bosnia","Qatar","Switzerland"],
+  C:["Brazil","Morocco","Haiti","Scotland"],
+  D:["USA","Paraguay","Australia","Kosovo/Bulgaria/Slovakia/Turkey"],
+  E:["Germany","Curaçao","Ivory Coast","Ecuador"],
+  F:["Netherlands","Japan","Poland/Sweden/Ukraine","Tunisia"],
+  G:["Belgium","Egypt","Iran","New Zealand"],
+  H:["Spain","Cape Verde","Saudi Arabia","Uruguay"],
+  I:["France","Senegal","Bolivia/Iraq/Suriname","Norway"],
+  J:["Argentina","Algeria","Austria","Jordan"],
+  K:["Portugal","DR Congo/Jamaica/New Caledonia","Uzbekistan","Colombia"],
+  L:["England","Croatia","Ghana","Panama"]
 };
 
-const container = document.getElementById("groups");
-let thirdPlaceSelections = [];
+const groupsDiv = document.getElementById("groups");
+let thirdPicks = [];
 
-// Render groups
-Object.entries(groupData).forEach(([group, teams])=>{
-  const section = document.createElement("div");
-  section.className = "group";
-  section.innerHTML = `<h2>Group ${group}</h2>`;
-  
+/* ===== RENDER GROUPS ===== */
+Object.entries(groupData).forEach(([group,teams])=>{
+  const g=document.createElement("div");
+  g.className="group";
+  g.innerHTML=`<h2>Group ${group}</h2>`;
+
   teams.forEach(team=>{
-    const card = document.createElement("div");
-    card.className = "team";
-    card.innerText = team;
-    card.onclick = () => selectTeam(card, section);
-    section.appendChild(card);
+    const t=document.createElement("div");
+    t.className="team";
+    t.innerText=team;
+
+    t.onclick=()=>{
+      if(t.classList.contains("first")||
+         t.classList.contains("second")||
+         t.classList.contains("third")) return;
+
+      const picks=g.querySelectorAll(".first,.second,.third");
+
+      if(picks.length===0) t.classList.add("first");
+      else if(picks.length===1) t.classList.add("second");
+      else if(picks.length===2){
+        if(thirdPicks.length>=8){
+          alert("Only 8 third-place teams can qualify.");
+          return;
+        }
+        t.classList.add("third");
+        thirdPicks.push(team);
+      }
+    };
+
+    g.appendChild(t);
   });
-  container.appendChild(section);
+
+  groupsDiv.appendChild(g);
 });
 
-function selectTeam(card, section){
-  const teams = Array.from(section.querySelectorAll(".team"));
-  const isFirst = card.classList.contains("first");
-  const isSecond = card.classList.contains("second");
-  const isThird = card.classList.contains("third");
+/* ===== NEXT BUTTON ===== */
+document.getElementById("nextBtn").onclick=()=>{
+  const data={};
 
-  // Clicking already selected team → remove it
-  if(isFirst || isSecond || isThird){
-    reset(card);
-    section.dataset.complete = false;
-    checkNextButton();
-    return;
-  }
-
-  // Assign 1st
-  const first = teams.find(t=>t.classList.contains("first"));
-  const second = teams.find(t=>t.classList.contains("second"));
-  const third = teams.find(t=>t.classList.contains("third"));
-
-  if(!first){assign(card,"first","1st")}
-  else if(!second){assign(card,"second","2nd")}
-  else if(!third){
-    if(thirdPlaceSelections.length<8){assign(card,"third","3rd"); thirdPlaceSelections.push(card); updateThirdDisabled();}
-    else alert("Only 8 third-place teams can be selected.");
-  }
-
-  section.dataset.complete = teams.filter(t=>t.classList.contains("first")||t.classList.contains("second")||t.classList.contains("third")).length===3;
-  checkNextButton();
-}
-
-function assign(card,rank,label){
-  card.classList.add(rank);
-  const badge = document.createElement("div");
-  badge.className = "rank";
-  badge.innerText = label;
-  card.appendChild(badge);
-}
-
-function reset(card){
-  if(card.classList.contains("third")){
-    const index = thirdPlaceSelections.indexOf(card);
-    if(index>-1) thirdPlaceSelections.splice(index,1);
-    updateThirdDisabled();
-  }
-  card.classList.remove("first","second","third");
-  const badge = card.querySelector(".rank");
-  if(badge) badge.remove();
-}
-
-function updateThirdDisabled(){
-  document.querySelectorAll(".team.third").forEach(t=>t.classList.remove("disabled"));
-  if(thirdPlaceSelections.length>=8){
-    document.querySelectorAll(".team:not(.first):not(.second):not(.third)").forEach(t=>t.classList.add("disabled"));
-  }
-}
-
-function checkNextButton(){
-  const allGroupsComplete = Array.from(document.querySelectorAll(".group")).every(g=>{
-    const teams = Array.from(g.querySelectorAll(".team"));
-    return teams.filter(t=>t.classList.contains("first")||t.classList.contains("second")||t.classList.contains("third")).length===3;
-  });
-  const nextBtn = document.getElementById("nextBtn");
-
-  if(allGroupsComplete && thirdPlaceSelections.length===8){
-    nextBtn.classList.add("active");
-    nextBtn.disabled = false;
-
-    // Make sure the button is clickable
-    nextBtn.style.cursor = "pointer";
-    nextBtn.onclick = function(){
-      window.location.href='round32.html';
+  document.querySelectorAll(".group").forEach(g=>{
+    const name=g.querySelector("h2").innerText;
+    data[name]={
+      first:g.querySelector(".first")?.innerText,
+      second:g.querySelector(".second")?.innerText,
+      third:g.querySelector(".third")?.innerText
     };
-  } else {
-    nextBtn.classList.remove("active");
-    nextBtn.disabled = true;
+  });
 
-    // Prevent clicking
-    nextBtn.style.cursor = "not-allowed";
-    nextBtn.onclick = null;
-  }
-}
+  localStorage.setItem("wc2026_groups",JSON.stringify(data));
+  window.location.href="round32.html";
+};
 </script>
 
+</body>
+</html>
