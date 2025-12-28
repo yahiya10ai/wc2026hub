@@ -2,144 +2,102 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FIFA World Cup 2026 – Group Stage</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#0b0b0b;
-  color:#fff;
-  padding:20px;
-}
-h1{
-  text-align:center;
-  color:#00ff99;
-  margin-bottom:30px;
-}
-.groups{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
-}
-.group{
-  background:#111;
-  padding:15px;
-  border-radius:12px;
-}
-.group h2{
-  text-align:center;
-  color:#00ff99;
-  margin-bottom:10px;
-}
-.team{
-  background:#222;
-  padding:10px;
-  margin:8px 0;
-  border-radius:8px;
-  cursor:pointer;
-  text-align:center;
-}
-.first{background:#ffd700;color:#000;}
-.second{background:#c0c0c0;color:#000;}
-.third{background:#cd7f32;color:#000;}
-
-#nextBtn{
-  margin:40px auto 0;
-  display:block;
-  padding:15px 40px;
-  font-size:18px;
-  border:none;
-  border-radius:30px;
-  background:#00ff99;
-  color:#000;
-  cursor:pointer;
-}
+body { font-family:"Segoe UI", Arial, sans-serif; background:#0b0b0b; color:#fff; margin:0; }
+header { text-align:center; padding:20px; font-size:28px; font-weight:700; background:#111; }
+.container { max-width:900px; margin:20px auto; padding:0 10px; }
+.group { background: rgba(255,255,255,0.1); padding:12px 16px; margin:12px 0; border-radius:12px; }
+.team { padding:8px 12px; margin:6px 0; border-radius:8px; cursor:pointer; background:rgba(0,0,0,0.3); transition:0.2s; }
+.team:hover { background:rgba(0,0,0,0.5); }
+.team.selected { background:#00ff99; color:#000; font-weight:700; }
+.group-name { font-weight:700; font-size:18px; margin-bottom:8px; }
+button { display:block; margin:30px auto; padding:14px 40px; font-size:18px; border:none; border-radius:30px; background:#00ff99; cursor:pointer; }
+button:disabled { background:#555; cursor:not-allowed; }
+@media(max-width:600px){ body{font-size:14px;} button{width:100%; font-size:16px;} }
 </style>
 </head>
-
 <body>
-
-<h1>🏆 FIFA World Cup 2026 – Group Stage</h1>
-
-<div class="groups" id="groups"></div>
-
-<button id="nextBtn">Proceed to Round of 32 ➜</button>
+<header>FIFA World Cup 2026 – Group Stage</header>
+<div class="container" id="groupsContainer"></div>
+<button id="nextBtn" disabled onclick="proceedNext()">Proceed to Round of 32</button>
 
 <script>
-/* ===== OFFICIAL WC 2026 GROUP DATA (A–L) ===== */
-const groupData = {
-  A:["Mexico","South Africa","Korea Republic","Czechia/Denmark/Iran/North Macedonia"],
-  B:["Canada","Italy/Wales/Bosnia","Qatar","Switzerland"],
-  C:["Brazil","Morocco","Haiti","Scotland"],
-  D:["USA","Paraguay","Australia","Kosovo/Bulgaria/Slovakia/Turkey"],
-  E:["Germany","Curaçao","Ivory Coast","Ecuador"],
-  F:["Netherlands","Japan","Poland/Sweden/Ukraine","Tunisia"],
-  G:["Belgium","Egypt","Iran","New Zealand"],
-  H:["Spain","Cape Verde","Saudi Arabia","Uruguay"],
-  I:["France","Senegal","Bolivia/Iraq/Suriname","Norway"],
-  J:["Argentina","Algeria","Austria","Jordan"],
-  K:["Portugal","DR Congo/Jamaica/New Caledonia","Uzbekistan","Colombia"],
-  L:["England","Croatia","Ghana","Panama"]
+// List of groups and teams (example – replace with actual teams)
+const groupsData = {
+  A:["Mexico","Canada","Japan","Saudi Arabia"],
+  B:["Brazil","USA","Australia","Ghana"],
+  C:["Germany","Netherlands","South Korea","Senegal"],
+  D:["Argentina","Poland","Qatar","Tunisia"],
+  E:["Spain","France","Morocco","Belgium"],
+  F:["Portugal","Italy","Ghana","Switzerland"],
+  G:["England","Senegal","Japan","Cameroon"],
+  H:["Uruguay","Cameroon","Tunisia","Ecuador"],
+  I:["Colombia","South Korea","Canada","Saudi Arabia"],
+  J:["Croatia","Switzerland","Mexico","Iran"],
+  K:["Denmark","Nigeria","Japan","USA"],
+  L:["Belgium","USA","Poland","Morocco"]
 };
 
-const groupsDiv = document.getElementById("groups");
-let thirdPicks = [];
+// Track picks
+const groupPicks = {};
 
-/* ===== RENDER GROUPS ===== */
-Object.entries(groupData).forEach(([group,teams])=>{
-  const g=document.createElement("div");
-  g.className="group";
-  g.innerHTML=`<h2>Group ${group}</h2>`;
+const container = document.getElementById("groupsContainer");
 
+Object.keys(groupsData).forEach(group=>{
+  const groupDiv = document.createElement("div");
+  groupDiv.className="group";
+  
+  const title = document.createElement("div");
+  title.className="group-name";
+  title.textContent="Group "+group;
+  groupDiv.appendChild(title);
+  
+  const teams = groupsData[group];
+  // Create clickable team divs for first, second, third
   teams.forEach(team=>{
-    const t=document.createElement("div");
-    t.className="team";
-    t.innerText=team;
-
-    t.onclick=()=>{
-      if(t.classList.contains("first")||
-         t.classList.contains("second")||
-         t.classList.contains("third")) return;
-
-      const picks=g.querySelectorAll(".first,.second,.third");
-
-      if(picks.length===0) t.classList.add("first");
-      else if(picks.length===1) t.classList.add("second");
-      else if(picks.length===2){
-        if(thirdPicks.length>=8){
-          alert("Only 8 third-place teams can qualify.");
-          return;
+    const teamDiv = document.createElement("div");
+    teamDiv.className="team";
+    teamDiv.textContent=team;
+    teamDiv.onclick = ()=>{
+      if(!groupPicks[group]) groupPicks[group]=[];
+      // Add/remove selection
+      const index = groupPicks[group].indexOf(team);
+      if(index>-1) {
+        groupPicks[group].splice(index,1);
+        teamDiv.classList.remove("selected");
+      } else {
+        if(groupPicks[group].length<3){
+          groupPicks[group].push(team);
+          teamDiv.classList.add("selected");
         }
-        t.classList.add("third");
-        thirdPicks.push(team);
       }
-    };
-
-    g.appendChild(t);
+      checkAllSelected();
+    }
+    groupDiv.appendChild(teamDiv);
   });
-
-  groupsDiv.appendChild(g);
+  container.appendChild(groupDiv);
 });
 
-/* ===== NEXT BUTTON ===== */
-document.getElementById("nextBtn").onclick=()=>{
-  const data={};
+// Enable next button only if all groups have 3 picks
+function checkAllSelected(){
+  const allDone = Object.keys(groupsData).every(g=>groupPicks[g] && groupPicks[g].length===3);
+  document.getElementById("nextBtn").disabled = !allDone;
+}
 
-  document.querySelectorAll(".group").forEach(g=>{
-    const name=g.querySelector("h2").innerText;
-    data[name]={
-      first:g.querySelector(".first")?.innerText,
-      second:g.querySelector(".second")?.innerText,
-      third:g.querySelector(".third")?.innerText
-    };
-  });
-
-  localStorage.setItem("wc2026_groups",JSON.stringify(data));
+// Save picks and go to R32
+function proceedNext(){
+  // Save as array of objects for round32.html
+  const picksArray = Object.keys(groupPicks).map(g=>({
+    group:g,
+    first:groupPicks[g][0],
+    second:groupPicks[g][1],
+    third:groupPicks[g][2]
+  }));
+  localStorage.setItem("wc2026_group_picks",JSON.stringify(picksArray));
   window.location.href="round32.html";
-};
+}
 </script>
-
 </body>
 </html>
