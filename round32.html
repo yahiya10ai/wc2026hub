@@ -15,7 +15,7 @@ body{
 header{
   text-align:center;
   padding:20px;
-  font-size:30px;
+  font-size:28px;
   font-weight:700;
   background:#111;
 }
@@ -25,10 +25,7 @@ header{
   grid-template-columns:1fr 1fr;
 }
 
-.section{
-  padding:20px;
-}
-
+.section{ padding:20px; }
 .top{ background:#b5121b; }
 .bottom{ background:#003a8f; }
 
@@ -47,13 +44,8 @@ header{
   padding:12px 14px;
   border-radius:10px;
   margin:6px 0;
-  font-size:17px;
+  font-size:16px;
   cursor:pointer;
-  transition:0.2s;
-}
-
-.team:hover{
-  background:rgba(0,0,0,0.55);
 }
 
 .team.winner{
@@ -62,9 +54,7 @@ header{
   font-weight:700;
 }
 
-.flag{
-  font-size:22px;
-}
+.flag{ font-size:22px; }
 
 .center{
   grid-column:1 / 3;
@@ -80,16 +70,11 @@ button{
   border-radius:30px;
   background:#00ff99;
   cursor:pointer;
-  margin-top:20px;
 }
 
 button:disabled{
   background:#555;
   cursor:not-allowed;
-}
-
-.trophy{
-  font-size:80px;
 }
 
 @media(max-width:900px){
@@ -107,96 +92,29 @@ button:disabled{
 
 <!-- 🔴 TOP HALF -->
 <div class="section top">
-
-  <div class="match">
-    <div class="team"><span class="flag">🇲🇽</span> Mexico</div>
-    <div class="team"><span class="flag">🇿🇦</span> South Africa</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇨🇦</span> Canada</div>
-    <div class="team"><span class="flag">🇨🇭</span> Switzerland</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇧🇷</span> Brazil</div>
-    <div class="team"><span class="flag">🇸🇨</span> Scotland</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇺🇸</span> USA</div>
-    <div class="team"><span class="flag">🇦🇺</span> Australia</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇩🇪</span> Germany</div>
-    <div class="team"><span class="flag">🇪🇨</span> Ecuador</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇳🇱</span> Netherlands</div>
-    <div class="team"><span class="flag">🇯🇵</span> Japan</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇧🇪</span> Belgium</div>
-    <div class="team"><span class="flag">🇳🇿</span> New Zealand</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇪🇸</span> Spain</div>
-    <div class="team"><span class="flag">🇺🇾</span> Uruguay</div>
-  </div>
-
+  <div class="match"><div class="team"><span class="flag">🇲🇽</span> Mexico</div><div class="team"><span class="flag">🇯🇵</span> Japan</div></div>
+  <div class="match"><div class="team"><span class="flag">🇨🇦</span> Canada</div><div class="team"><span class="flag">🇨🇭</span> Switzerland</div></div>
+  <div class="match"><div class="team"><span class="flag">🇧🇷</span> Brazil</div><div class="team"><span class="flag">🇸🇳</span> Senegal</div></div>
+  <div class="match"><div class="team"><span class="flag">🇺🇸</span> USA</div><div class="team"><span class="flag">🇦🇺</span> Australia</div></div>
+  <div class="match"><div class="team"><span class="flag">🇩🇪</span> Germany</div><div class="team"><span class="flag">🇪🇨</span> Ecuador</div></div>
+  <div class="match"><div class="team"><span class="flag">🇳🇱</span> Netherlands</div><div class="team"><span class="flag">🇰🇷</span> South Korea</div></div>
+  <div class="match"><div class="team"><span class="flag">🇧🇪</span> Belgium</div><div class="team"><span class="flag">🇳🇿</span> New Zealand</div></div>
+  <div class="match"><div class="team"><span class="flag">🇪🇸</span> Spain</div><div class="team"><span class="flag">🇺🇾</span> Uruguay</div></div>
 </div>
 
 <!-- 🔵 BOTTOM HALF -->
 <div class="section bottom">
-
-  <div class="match">
-    <div class="team"><span class="flag">🇫🇷</span> France</div>
-    <div class="team"><span class="flag">🇳🇴</span> Norway</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇦🇷</span> Argentina</div>
-    <div class="team"><span class="flag">🇯🇴</span> Jordan</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇵🇹</span> Portugal</div>
-    <div class="team"><span class="flag">🇨🇴</span> Colombia</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🏴</span> England</div>
-    <div class="team"><span class="flag">🇵🇦</span> Panama</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇫🇷</span> France</div>
-    <div class="team"><span class="flag">🇸🇳</span> Senegal</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇦🇷</span> Argentina</div>
-    <div class="team"><span class="flag">🇦🇹</span> Austria</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🇵🇹</span> Portugal</div>
-    <div class="team"><span class="flag">🇺🇿</span> Uzbekistan</div>
-  </div>
-
-  <div class="match">
-    <div class="team"><span class="flag">🏴</span> England</div>
-    <div class="team"><span class="flag">🇭🇷</span> Croatia</div>
-  </div>
-
+  <div class="match"><div class="team"><span class="flag">🇫🇷</span> France</div><div class="team"><span class="flag">🇳🇴</span> Norway</div></div>
+  <div class="match"><div class="team"><span class="flag">🇦🇷</span> Argentina</div><div class="team"><span class="flag">🇯🇴</span> Jordan</div></div>
+  <div class="match"><div class="team"><span class="flag">🇵🇹</span> Portugal</div><div class="team"><span class="flag">🇨🇴</span> Colombia</div></div>
+  <div class="match"><div class="team"><span class="flag">🏴</span> England</div><div class="team"><span class="flag">🇵🇦</span> Panama</div></div>
+  <div class="match"><div class="team"><span class="flag">🇮🇹</span> Italy</div><div class="team"><span class="flag">🇨🇲</span> Cameroon</div></div>
+  <div class="match"><div class="team"><span class="flag">🇩🇰</span> Denmark</div><div class="team"><span class="flag">🇮🇷</span> Iran</div></div>
+  <div class="match"><div class="team"><span class="flag">🇨🇷</span> Costa Rica</div><div class="team"><span class="flag">🇷🇸</span> Serbia</div></div>
+  <div class="match"><div class="team"><span class="flag">🇲🇦</span> Morocco</div><div class="team"><span class="flag">🇭🇷</span> Croatia</div></div>
 </div>
 
 <div class="center">
-  <div class="trophy">🏆</div>
   <button id="nextBtn" disabled onclick="goNext()">Proceed to Round of 16</button>
 </div>
 
@@ -218,15 +136,13 @@ matches.forEach(match=>{
 });
 
 function checkReady(){
-  const winners = document.querySelectorAll(".winner");
-  nextBtn.disabled = winners.length !== 16;
+  nextBtn.disabled = document.querySelectorAll(".winner").length !== 16;
 }
 
 function goNext(){
-  const winners = [...document.querySelectorAll(".winner")].map(t=>t.innerText.trim());
-  localStorage.setItem("wc2026_r32_winners", JSON.stringify(winners));
+  const winners=[...document.querySelectorAll(".winner")].map(t=>t.innerText);
+  localStorage.setItem("wc2026_r32_winners",JSON.stringify(winners));
   alert("Round of 16 ready 🔥");
-  // window.location.href = "round16.html";
 }
 </script>
 
