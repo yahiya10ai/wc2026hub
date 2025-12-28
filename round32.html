@@ -76,24 +76,34 @@ button:disabled{
 <button id="nextBtn" disabled onclick="proceedNext()">Proceed to Round of 16</button>
 
 <script>
-// List of R32 matches exactly as per 2026 format
+// Get group picks from localStorage
+// Structure: {A:["A1","A2","A3"], B:["B1","B2","B3"], ...}
+const groups = JSON.parse(localStorage.getItem("wc2026_group_picks") || "{}");
+
+// If no picks, fill placeholders
+const groupKeys = ["A","B","C","D","E","F","G","H","I","J","K","L"];
+groupKeys.forEach(k=>{
+  if(!groups[k]) groups[k]=[k+"1", k+"2", k+"3"];
+});
+
+// Build R32 matches exactly
 const matches = [
-  {teams:["Group A 2nd","Group B 2nd"], date:"Monday, 29 June 2026", stadium:"Los Angeles Stadium"},
-  {teams:["Group E 1st","Group A/B/C/D/F 3rd"], date:"Monday, 29 June 2026", stadium:"Boston Stadium"},
-  {teams:["Group F 1st","Group C 2nd"], date:"Monday, 29 June 2026", stadium:"Estadio Monterrey"},
-  {teams:["Group C 1st","Group F 2nd"], date:"Monday, 29 June 2026", stadium:"Houston Stadium"},
-  {teams:["Group I 1st","Group C/D/F/G/H 3rd"], date:"Tuesday, 30 June 2026", stadium:"New York New Jersey Stadium"},
-  {teams:["Group E 2nd","Group I 2nd"], date:"Tuesday, 30 June 2026", stadium:"Dallas Stadium"},
-  {teams:["Group A 1st","Group C/E/F/H/I 3rd"], date:"Tuesday, 30 June 2026", stadium:"Mexico City Stadium"},
-  {teams:["Group L 1st","Group E/H/I/J/K 3rd"], date:"Wednesday, 1 July 2026", stadium:"Atlanta Stadium"},
-  {teams:["Group D 1st","Group B/E/F/I/J 3rd"], date:"Wednesday, 1 July 2026", stadium:"San Francisco Bay Area Stadium"},
-  {teams:["Group G 1st","Group A/E/H/I/J 3rd"], date:"Wednesday, 1 July 2026", stadium:"Seattle Stadium"},
-  {teams:["Group K 2nd","Group L 2nd"], date:"Thursday, 2 July 2026", stadium:"Toronto Stadium"},
-  {teams:["Group H 1st","Group J 2nd"], date:"Thursday, 2 July 2026", stadium:"Los Angeles Stadium"},
-  {teams:["Group B 1st","Group E/F/G/I/J 3rd"], date:"Thursday, 2 July 2026", stadium:"BC Place Vancouver"},
-  {teams:["Group J 1st","Group H 2nd"], date:"Friday, 3 July 2026", stadium:"Miami Stadium"},
-  {teams:["Group K 1st","Group D/E/I/J/L 3rd"], date:"Friday, 3 July 2026", stadium:"Kansas City Stadium"},
-  {teams:["Group D 2nd","Group G 2nd"], date:"Friday, 3 July 2026", stadium:"Dallas Stadium"},
+  {teams:[groups.A[1], groups.B[1]], date:"Monday, 29 June 2026", stadium:"Los Angeles Stadium"},
+  {teams:[groups.E[0], groups.A[2]], date:"Monday, 29 June 2026", stadium:"Boston Stadium"},
+  {teams:[groups.F[0], groups.C[1]], date:"Monday, 29 June 2026", stadium:"Estadio Monterrey"},
+  {teams:[groups.C[0], groups.F[1]], date:"Monday, 29 June 2026", stadium:"Houston Stadium"},
+  {teams:[groups.I[0], groups.C[2]], date:"Tuesday, 30 June 2026", stadium:"New York New Jersey Stadium"},
+  {teams:[groups.E[1], groups.I[1]], date:"Tuesday, 30 June 2026", stadium:"Dallas Stadium"},
+  {teams:[groups.A[0], groups.E[2]], date:"Tuesday, 30 June 2026", stadium:"Mexico City Stadium"},
+  {teams:[groups.L[0], groups.E[2]], date:"Wednesday, 1 July 2026", stadium:"Atlanta Stadium"},
+  {teams:[groups.D[0], groups.B[2]], date:"Wednesday, 1 July 2026", stadium:"San Francisco Bay Area Stadium"},
+  {teams:[groups.G[0], groups.A[2]], date:"Wednesday, 1 July 2026", stadium:"Seattle Stadium"},
+  {teams:[groups.K[1], groups.L[1]], date:"Thursday, 2 July 2026", stadium:"Toronto Stadium"},
+  {teams:[groups.H[0], groups.J[1]], date:"Thursday, 2 July 2026", stadium:"Los Angeles Stadium"},
+  {teams:[groups.B[0], groups.E[2]], date:"Thursday, 2 July 2026", stadium:"BC Place Vancouver"},
+  {teams:[groups.J[0], groups.H[1]], date:"Friday, 3 July 2026", stadium:"Miami Stadium"},
+  {teams:[groups.K[0], groups.D[2]], date:"Friday, 3 July 2026", stadium:"Kansas City Stadium"},
+  {teams:[groups.D[1], groups.G[1]], date:"Friday, 3 July 2026", stadium:"Dallas Stadium"},
 ];
 
 // Render matches
@@ -131,7 +141,6 @@ function proceedNext(){
   const winners = [...document.querySelectorAll(".match")].map(m=>m.querySelector(".team.selected").textContent);
   localStorage.setItem("wc2026_r32_winners",JSON.stringify(winners));
   alert("Winners saved! Proceeding to Round of 16.");
-  // Redirect to R16 page
   window.location.href = "round16.html";
 }
 </script>
