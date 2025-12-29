@@ -106,6 +106,8 @@ header{
   margin:30px 0 10px;
   opacity:.9;
 }
+  
+<div id="statusMsg" style="margin-bottom:10px;opacity:.85"></div>
 
 button{
   margin-top:15px;
@@ -224,18 +226,30 @@ function updateGroupUI(group, table) {
   });
 }
 
-function validate() {
-  const allValid =
-    Object.keys(groupsData).every(g => picks[g].length === 3) &&
-    totalThirdCount === MAX_THIRD;
+function validate(){
+  const allGroupsReady = Object.keys(groupsData).every(
+    g => picks[g] && picks[g].length === 3
+  );
 
-  document.getElementById("nextBtn").disabled = !allValid;
+  const btn = document.getElementById("nextBtn");
+  const msg = document.getElementById("statusMsg");
+
+  if(!allGroupsReady){
+    btn.disabled = true;
+    msg.textContent = "Select 3 teams in every group";
+    return;
+  }
+
+  if(totalThirdCount !== 8){
+    btn.disabled = true;
+    msg.textContent = "Select exactly 8 best third-place teams (" + totalThirdCount + "/8)";
+    return;
+  }
+
+  msg.textContent = "All set! You can proceed to playoffs";
+  btn.disabled = false;
 }
 
-function goNext() {
-  localStorage.setItem("wc2026_groups", JSON.stringify(picks));
-  window.location.href = "round32.html";
-}
 </script>
 
 </body>
