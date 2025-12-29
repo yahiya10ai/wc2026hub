@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FIFA 2026 – Round of 16</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+      color:#fff;
+    }
+
+    h1{
+      text-align:center;
+      margin:20px 0;
+      letter-spacing:1px;
+    }
+
+    .container{
+      max-width:1000px;
+      margin:auto;
+      padding:15px;
+    }
+
+    .match{
+      background: rgba(255,255,255,0.1);
+      border-radius:12px;
+      padding:15px;
+      margin-bottom:15px;
+    }
+
+    .match-title{
+      font-size:14px;
+      opacity:0.8;
+      margin-bottom:10px;
+      text-align:center;
+    }
+
+    .teams{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .team{
+      flex:1;
+      padding:12px;
+      text-align:center;
+      border-radius:10px;
+      background: rgba(0,0,0,0.3);
+      cursor:pointer;
+      transition:0.3s;
+      border:2px solid transparent;
+    }
+
+    .team:hover{
+      background: rgba(255,255,255,0.15);
+    }
+
+    .team.selected{
+      background:#00c853;
+      color:#000;
+      font-weight:bold;
+      border-color:#fff;
+    }
+
+    .next-btn{
+      margin:30px auto;
+      display:block;
+      padding:15px 35px;
+      font-size:16px;
+      font-weight:bold;
+      border:none;
+      border-radius:30px;
+      background:#ffd700;
+      color:#000;
+      cursor:pointer;
+    }
+
+    .next-btn:disabled{
+      opacity:0.5;
+      cursor:not-allowed;
+    }
+
+    @media(max-width:600px){
+      .teams{
+        flex-direction:column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Round of 16</h1>
+
+<div class="container" id="matches"></div>
+
+<button class="next-btn" id="nextBtn" disabled>
+  Proceed to Quarter Finals →
+</button>
+
+<script>
+  const r16Teams = JSON.parse(localStorage.getItem("r16Teams")) || [];
+
+  if(r16Teams.length !== 16){
+    alert("Round of 16 teams not found. Go back and complete Round of 32.");
+  }
+
+  const matchesDiv = document.getElementById("matches");
+  const winners = new Array(8).fill(null);
+
+  for(let i=0;i<16;i+=2){
+    const matchIndex = i/2;
+
+    const match = document.createElement("div");
+    match.className = "match";
+
+    match.innerHTML = `
+      <div class="match-title">Match ${matchIndex + 1}</div>
+      <div class="teams">
+        <div class="team" data-team="${r16Teams[i]}">${r16Teams[i]}</div>
+        <div class="team" data-team="${r16Teams[i+1]}">${r16Teams[i+1]}</div>
+      </div>
+    `;
+
+    const teamDivs = match.querySelectorAll(".team");
+
+    teamDivs.forEach(teamDiv=>{
+      teamDiv.onclick = () => {
+        teamDivs.forEach(t=>t.classList.remove("selected"));
+        teamDiv.classList.add("selected");
+        winners[matchIndex] = teamDiv.dataset.team;
+        checkComplete();
+      };
+    });
+
+    matchesDiv.appendChild(match);
+  }
+
+  function checkComplete(){
+    const done = winners.every(w => w !== null);
+    document.getElementById("nextBtn").disabled = !done;
+  }
+
+  document.getElementById("nextBtn").onclick = () => {
+    localStorage.setItem("quarterTeams", JSON.stringify(winners));
+    window.location.href = "quarters.html";
+  };
+</script>
+
+</body>
+</html>
