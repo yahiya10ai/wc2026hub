@@ -142,7 +142,6 @@ button:disabled{
   <br>
   <button id="nextBtn" disabled onclick="goNext()">Proceed to Playoffs</button>
 </div>
-
 <script>
 const groupsData = {
 A:["Mexico","South Africa","South Korea","Playoff D Winner"],
@@ -159,43 +158,47 @@ K:["Portugal","Colombia","Uzbekistan","Playoff 1 Winner"],
 L:["England","Croatia","Ghana","Panama"]
 };
 
-const picks = {};
-let thirdCount = 0;
-
 const container = document.getElementById("groups");
+const picks = {}; // { A: [team1, team2, team3], ... }
+let totalThirdCount = 0;
+const MAX_THIRD = 8;
 
-for(const g in groupsData){
+for (const group in groupsData) {
+  picks[group] = [];
+
   const card = document.createElement("div");
-  card.className="group-card";
+  card.className = "group-card";
+  card.innerHTML = `<div class="group-title">Group ${group}</div>`;
 
-  card.innerHTML = `<div class="group-title">Group ${g}</div>`;
   const table = document.createElement("div");
-  table.className="table";
 
-  groupsData[g].forEach((team,i)=>{
+  groupsData[group].forEach(team => {
     const row = document.createElement("div");
-    row.className="row";
-    row.innerHTML = `<div class="pos">${i+1}</div><div class="team">${team}</div>`;
+    row.className = "row";
+    row.innerHTML = `<div class="pos"></div><div class="team">${team}</div>`;
 
-    row.onclick = ()=>{
-      picks[g] ??= [];
+    row.onclick = () => {
+      const index = picks[group].indexOf(team);
 
-      if(row.classList.contains("selected-1") || row.classList.contains("selected-2") || row.classList.contains("selected-3")){
-        if(i===2) thirdCount--;
-        row.className="row";
-        picks[g] = picks[g].filter(t=>t!==team);
-      } else {
-        if(i<2 && picks[g].length<2){
-          row.classList.add(i===0?"selected-1":"selected-2");
-          picks[g].push(team);
-        }
-        if(i===2 && thirdCount<8){
-          row.classList.add("selected-3");
-          picks[g].push(team);
-          thirdCount++;
+      // REMOVE selection
+      if (index !== -1) {
+        if (index === 2) totalThirdCount--;
+        picks[group].splice(index, 1);
+        updateGroupUI(group, table);
+      } 
+      // ADD selection
+      else {
+        if (picks[group].length < 3) {
+          if (picks[group].length === 2 && totalThirdCount >= MAX_THIRD) {
+            alert("Only 8 best third-place teams are allowed.");
+            return;
+          }
+          picks[group].push(team);
+          if (picks[group].length === 3) totalThirdCount++;
+          updateGroupUI(group, table);
         }
       }
-      check();
+      validate();
     };
 
     table.appendChild(row);
@@ -205,14 +208,33 @@ for(const g in groupsData){
   container.appendChild(card);
 }
 
-function check(){
-  const ok = Object.keys(groupsData).every(g=>picks[g]?.length>=2) && thirdCount===8;
-  document.getElementById("nextBtn").disabled = !ok;
+function updateGroupUI(group, table) {
+  [...table.children].forEach(row => {
+    row.classList.remove("selected-1","selected-2","selected-3");
+    row.querySelector(".pos").textContent = "";
+  });
+
+  picks[group].forEach((team, i) => {
+    [...table.children].forEach(row => {
+      if (row.querySelector(".team").textContent === team) {
+        row.classList.add(i === 0 ? "selected-1" : i === 1 ? "selected-2" : "selected-3");
+        row.querySelector(".pos").textContent = i + 1;
+      }
+    });
+  });
 }
 
-function goNext(){
-  localStorage.setItem("wc2026_groups",JSON.stringify(picks));
-  window.location.href="round32.html";
+function validate() {
+  const allValid =
+    Object.keys(groupsData).every(g => picks[g].length === 3) &&
+    totalThirdCount === MAX_THIRD;
+
+  document.getElementById("nextBtn").disabled = !allValid;
+}
+
+function goNext() {
+  localStorage.setItem("wc2026_groups", JSON.stringify(picks));
+  window.location.href = "round32.html";
 }
 </script>
 
