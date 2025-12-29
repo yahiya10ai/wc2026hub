@@ -145,6 +145,7 @@ const MAX_THIRD = 8;
 // BUILD GROUP CARDS
 for (const g in groupsData) {
   picks[g] = [];
+
   const card = document.createElement("div");
   card.className = "group-card";
   card.innerHTML = `<div class="group-title">Group ${g}</div>`;
@@ -165,6 +166,7 @@ for (const g in groupsData) {
         updateGroupUI(g, table);
       } else {
         if(picks[g].length < 3){
+          // Only limit 3rd-place globally
           if(picks[g].length === 2 && totalThirdCount >= MAX_THIRD){
             alert("Only 8 best third-place teams allowed.");
             return;
@@ -206,11 +208,12 @@ function validate(){
   const btn = document.getElementById("nextBtn");
   const msg = document.getElementById("statusMsg");
 
+  // Check each group has at least 2 picks
   for(const g in picks){
-    if(picks[g].length !== 3){
+    if(picks[g].length < 2){
       btn.disabled=true;
       btn.style.cursor="not-allowed";
-      msg.textContent="Select 3 teams in every group";
+      msg.textContent="Select 1st and 2nd place in all groups";
       return;
     }
   }
@@ -234,11 +237,6 @@ document.getElementById("nextBtn").onclick = ()=>{
   window.location.href="round32.html";
 };
 
-// FORCE BUTTON ENABLE FOR TESTING (optional, remove in production)
-// document.getElementById("nextBtn").disabled = false;
-// document.getElementById("nextBtn").style.cursor="pointer";
-
 </script>
-
 </body>
 </html>
