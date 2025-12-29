@@ -24,19 +24,13 @@ header{
   margin:30px auto;
   padding:0 15px;
 }
-.round-title{
-  text-align:center;
-  font-size:22px;
-  margin:25px 0 15px;
-  font-weight:700;
-}
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
   gap:20px;
 }
 .match{
-  background:rgba(255,255,255,.05);
+  background:rgba(255,255,255,.06);
   border-radius:14px;
   overflow:hidden;
 }
@@ -50,7 +44,11 @@ header{
   color:#000;
   font-weight:800;
 }
-.vs{text-align:center;opacity:.6;font-size:13px;}
+.vs{
+  text-align:center;
+  font-size:13px;
+  opacity:.6;
+}
 </style>
 </head>
 
@@ -59,63 +57,74 @@ header{
 <header>FIFA World Cup 2026 – Round of 16</header>
 
 <div class="section">
-  <div class="round-title">Round of 16</div>
   <div class="grid" id="r16"></div>
 </div>
 
 <script>
 const r32 = JSON.parse(localStorage.getItem("wc2026_r32"));
+
 if(!r32 || r32.length !== 16){
   alert("Round of 32 not completed");
-  window.location.href="round32.html";
+  window.location.href = "round32.html";
 }
 
-// REAL FIFA 2026 R16 ORDER (from your fixture list)
+/* ✅ OFFICIAL ROUND OF 16 PAIRINGS */
 const r16Matches = [
-  r32[1], r32[4],   // Match 89
-  r32[0], r32[2],   // Match 90
-  r32[3], r32[5],   // Match 91
-  r32[6], r32[7],   // Match 92
-  r32[10], r32[11], // Match 93
-  r32[8], r32[9],   // Match 94
-  r32[12], r32[15], // Match 95
-  r32[13], r32[14]  // Match 96
+  r32[1],  r32[4],   // Match 89: 74 vs 77
+  r32[0],  r32[2],   // Match 90: 73 vs 75
+  r32[3],  r32[5],   // Match 91: 76 vs 78
+  r32[6],  r32[7],   // Match 92: 79 vs 80
+  r32[10], r32[11],  // Match 93: 83 vs 84
+  r32[8],  r32[9],   // Match 94: 81 vs 82
+  r32[13], r32[15],  // Match 95: 86 vs 88
+  r32[12], r32[14]   // Match 96: 85 vs 87
 ];
 
 let winners = [];
 
-function build(){
-  const box=document.getElementById("r16");
+function buildRound(){
+  const box = document.getElementById("r16");
+
   for(let i=0;i<r16Matches.length;i+=2){
-    const m=document.createElement("div"); m.className="match";
-    const a=document.createElement("div");
-    const b=document.createElement("div");
-    const vs=document.createElement("div");
-    a.className=b.className="team"; vs.className="vs"; vs.textContent="VS";
-    a.textContent=r16Matches[i];
-    b.textContent=r16Matches[i+1];
+    const match = document.createElement("div");
+    match.className = "match";
 
-    a.onclick=()=>pick(a,b,r16Matches[i]);
-    b.onclick=()=>pick(b,a,r16Matches[i+1]);
+    const t1 = document.createElement("div");
+    const t2 = document.createElement("div");
+    const vs = document.createElement("div");
 
-    m.append(a,vs,b); box.appendChild(m);
+    t1.className = t2.className = "team";
+    vs.className = "vs";
+    vs.textContent = "VS";
+
+    t1.textContent = r16Matches[i];
+    t2.textContent = r16Matches[i+1];
+
+    t1.onclick = ()=>selectWinner(t1,t2,r16Matches[i]);
+    t2.onclick = ()=>selectWinner(t2,t1,r16Matches[i+1]);
+
+    match.append(t1,vs,t2);
+    box.appendChild(match);
   }
 }
 
-function pick(sel,other,team){
+function selectWinner(sel,other,team){
+  if(sel.classList.contains("selected")) return;
+
   sel.classList.add("selected");
   other.classList.remove("selected");
-  if(winners.length<8){
-    winners.push(team);
-    if(winners.length===8){
-      localStorage.setItem("wc2026_r16",JSON.stringify(winners));
-      window.location.href="quarterfinals.html";
-    }
+
+  winners.push(team);
+
+  if(winners.length === 8){
+    localStorage.setItem("wc2026_r16", JSON.stringify(winners));
+    window.location.href = "quarterfinals.html";
   }
 }
 
-build();
+buildRound();
 </script>
 
 </body>
 </html>
+
