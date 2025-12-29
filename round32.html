@@ -1,78 +1,255 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FIFA 2026 – Round of 32</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FIFA World Cup 2026 – Playoffs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{margin:0;font-family:Arial;background:#0b1c24;color:#fff}
-h1{text-align:center;margin:20px}
-.match{background:#132f3d;margin:12px;border-radius:10px;padding:12px}
-.title{text-align:center;font-size:14px;opacity:.8;margin-bottom:8px}
-.teams{display:flex;gap:10px}
-.team{flex:1;background:#1e465c;padding:14px;text-align:center;
-border-radius:8px;cursor:pointer}
-.team.selected{background:#00e676;color:#000;font-weight:bold}
-button{display:block;margin:30px auto;padding:14px 40px;
-border:none;border-radius:30px;font-size:16px;font-weight:bold;
-background:#ffd700;color:#000;cursor:pointer}
-button:disabled{opacity:.5}
-@media(max-width:600px){.teams{flex-direction:column}}
-</style>
-</head>
-
-<body>
-
-<h1>Round of 32</h1>
-<div id="matches"></div>
-
-<button id="nextBtn" disabled>Proceed to Round of 16 →</button>
-
-<script>
-const groups = JSON.parse(localStorage.getItem("groupResults"));
-const third = JSON.parse(localStorage.getItem("bestThirdTeams"));
-if(!groups || !third || third.length!==8){
-  alert("Group stage data missing");
+body{
+  margin:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:radial-gradient(circle at top,#0b1d2a,#020b12);
+  color:#fff;
 }
 
-const M = [
-  [73, groups.A.second, groups.B.second],
-  [74, groups.E.first,  third[0]],
-  [75, groups.F.first,  groups.C.second],
-  [76, groups.C.first,  groups.F.second],
+header{
+  text-align:center;
+  padding:22px;
+  font-size:28px;
+  font-weight:800;
+  background:linear-gradient(90deg,#0f2027,#203a43,#2c5364);
+}
 
-  [77, groups.I.first,  third[1]],
-  [78, groups.E.second, groups.I.second],
-  [79, groups.A.first,  third[2]],
+.section{
+  max-width:1200px;
+  margin:30px auto;
+  padding:0 15px;
+}
 
-  [80, groups.L.first,  third[3]],
-  [81, groups.D.first,  third[4]],
-  [82, groups.G.first,  third[5]],
+.round-title{
+  text-align:center;
+  font-size:22px;
+  margin:25px 0 15px;
+  font-weight:700;
+}
 
-  [83, groups.K.second, groups.L.second],
-  [84, groups.H.first,  groups.J.second],
-  [85, groups.B.first,  third[6]],
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+}
 
-  [86, groups.J.first,  groups.H.second],
-  [87, groups.K.first,  third[7]],
-  [88, groups.D.second, groups.G.second]
+.match{
+  background:rgba(255,255,255,.05);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 6px 18px rgba(0,0,0,.6);
+}
+
+.team{
+  padding:14px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.team:hover{
+  background:rgba(0,255,153,.2);
+}
+
+.team.selected{
+  background:linear-gradient(90deg,#00c853,#64dd17);
+  color:#000;
+  font-weight:800;
+}
+
+.vs{
+  text-align:center;
+  padding:6px;
+  opacity:.6;
+  font-size:13px;
+}
+
+.winner-card{
+  margin-top:40px;
+  text-align:center;
+  padding:30px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#ffd700,#ffb300);
+  color:#000;
+  font-size:26px;
+  font-weight:900;
+  display:none;
+}
+
+@media(max-width:600px){
+  header{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<header>FIFA World Cup 2026 – Playoffs</header>
+
+<div class="section">
+  <div class="round-title">Round of 32</div>
+  <div class="grid" id="r32"></div>
+
+  <div class="round-title">Round of 16</div>
+  <div class="grid" id="r16"></div>
+
+  <div class="round-title">Quarter-finals</div>
+  <div class="grid" id="qf"></div>
+
+  <div class="round-title">Semi-finals</div>
+  <div class="grid" id="sf"></div>
+
+  <div class="round-title">Final</div>
+  <div class="grid" id="final"></div>
+
+  <div class="winner-card" id="winnerCard">
+    🏆 World Cup 2026 Winner  
+    <div id="winnerName"></div>
+  </div>
+</div>
+
+<script>
+// LOAD GROUP DATA
+const groupData = JSON.parse(localStorage.getItem("wc2026_groups"));
+if(!groupData){
+  alert("No group data found. Please complete group stage first.");
+  window.location.href="group.html";
+}
+
+// BUILD QUALIFIED TEAMS
+let first = [], second = [], third = [];
+
+for(const g in groupData){
+  first.push(groupData[g][0]);
+  second.push(groupData[g][1]);
+  if(groupData[g][2]) third.push(groupData[g][2]);
+}
+
+// Only 8 best 3rd (already ensured in group stage)
+third = third.slice(0,8);
+
+// ROUND OF 32 – OFFICIAL FIFA 2026 FORMAT (MATCHES 73–88)
+let r32Teams = [
+  // Match 73 – A2 vs B2
+  second[0], second[1],
+
+  // Match 74 – E1 vs best 3rd (A/B/C/D/F)
+  first[4], third[0],
+
+  // Match 75 – F1 vs C2
+  first[5], second[2],
+
+  // Match 76 – C1 vs F2
+  first[2], second[5],
+
+  // Match 77 – I1 vs best 3rd (C/D/F/G/H)
+  first[8], third[1],
+
+  // Match 78 – E2 vs I2
+  second[4], second[8],
+
+  // Match 79 – A1 vs best 3rd (C/E/F/H/I)
+  first[0], third[2],
+
+  // Match 80 – L1 vs best 3rd (E/H/I/J/K)
+  first[11], third[3],
+
+  // Match 81 – D1 vs best 3rd (B/E/F/I/J)
+  first[3], third[4],
+
+  // Match 82 – G1 vs best 3rd (A/E/H/I/J)
+  first[6], third[5],
+
+  // Match 83 – K2 vs L2
+  second[10], second[11],
+
+  // Match 84 – H1 vs J2
+  first[7], second[9],
+
+  // Match 85 – B1 vs best 3rd (E/F/G/I/J)
+  first[1], third[6],
+
+  // Match 86 – J1 vs H2
+  first[9], second[7],
+
+  // Match 87 – K1 vs best 3rd (D/E/I/J/L)
+  first[10], third[7],
+
+  // Match 88 – D2 vs G2
+  second[3], second[6]
 ];
 
-const box=document.getElementById("matches");
-const winners={};
+// GENERIC ROUND BUILDER
+function buildRound(containerId, teams, nextCallback){
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
 
-M.forEach(m=>{
-  const d=document.createElement("div");
-  d.className="match";
-  d.innerHTML=`
-    <div class="title">Match ${m[0]}</div>
-    <div class="teams">
-      <div class="team">${m[1]}</div>
-      <div class="team">${m[2]}</div>
-    </div>`;
-  const t=d.querySelectorAll(".team");
-  t.forEach(x=>{
-    x.onclick=()=>{
-      t.forEach(y=>y.classList.remove("selected"));
-      x.classList.add("selected");
-      winners
+  for(let i=0;i<teams.length;i+=2){
+    const match = document.createElement("div");
+    match.className="match";
+
+    const t1 = document.createElement("div");
+    const t2 = document.createElement("div");
+
+    t1.className="team";
+    t2.className="team";
+
+    t1.textContent = teams[i];
+    t2.textContent = teams[i+1];
+
+    t1.onclick = ()=>{
+      t1.classList.add("selected");
+      t2.classList.remove("selected");
+      nextCallback(teams[i]);
+    };
+
+    t2.onclick = ()=>{
+      t2.classList.add("selected");
+      t1.classList.remove("selected");
+      nextCallback(teams[i+1]);
+    };
+
+    match.appendChild(t1);
+    match.appendChild(document.createElement("div")).className="vs";
+    match.appendChild(t2);
+
+    container.appendChild(match);
+  }
+}
+
+// PROGRESSION LOGIC
+let r16=[], qf=[], sf=[], final=[];
+
+buildRound("r32", r32Teams, t=>{
+  if(r16.length<16) r16.push(t);
+  if(r16.length===16){
+    buildRound("r16", r16, t2=>{
+      if(qf.length<8) qf.push(t2);
+      if(qf.length===8){
+        buildRound("qf", qf, t3=>{
+          if(sf.length<4) sf.push(t3);
+          if(sf.length===4){
+            buildRound("sf", sf, t4=>{
+              if(final.length<2) final.push(t4);
+              if(final.length===2){
+                buildRound("final", final, t5=>{
+                  document.getElementById("winnerCard").style.display="block";
+                  document.getElementById("winnerName").textContent=t5;
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+});
+</script>
+
+</body>
+</html>
