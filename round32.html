@@ -1,170 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>FIFA World Cup 2026 – Round of 32</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>FIFA 2026 – Round of 32</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:linear-gradient(135deg,#081c24,#0b2e3c);
-  color:#fff;
-}
-h1{
-  text-align:center;
-  margin:20px 0;
-}
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:15px;
-}
-.match{
-  background:rgba(255,255,255,0.08);
-  border-radius:12px;
-  padding:15px;
-  margin-bottom:15px;
-}
-.match-title{
-  font-size:14px;
-  opacity:.8;
-  text-align:center;
-  margin-bottom:10px;
-}
-.teams{
-  display:flex;
-  gap:10px;
-}
-.team{
-  flex:1;
-  padding:14px;
-  background:rgba(0,0,0,.4);
-  text-align:center;
-  border-radius:10px;
-  cursor:pointer;
-  transition:.3s;
-  border:2px solid transparent;
-}
-.team:hover{
-  background:rgba(255,255,255,.15);
-}
-.team.selected{
-  background:#00e676;
-  color:#000;
-  font-weight:bold;
-  border-color:#fff;
-}
-.next-btn{
-  display:block;
-  margin:30px auto;
-  padding:16px 40px;
-  font-size:16px;
-  font-weight:bold;
-  border:none;
-  border-radius:30px;
-  background:#ffd700;
-  color:#000;
-  cursor:pointer;
-}
-.next-btn:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-@media(max-width:600px){
-  .teams{flex-direction:column;}
-}
+body{margin:0;font-family:Arial;background:#0b1c24;color:#fff}
+h1{text-align:center;margin:20px}
+.match{background:#132f3d;margin:12px;border-radius:10px;padding:12px}
+.title{text-align:center;font-size:14px;opacity:.8;margin-bottom:8px}
+.teams{display:flex;gap:10px}
+.team{flex:1;background:#1e465c;padding:14px;text-align:center;
+border-radius:8px;cursor:pointer}
+.team.selected{background:#00e676;color:#000;font-weight:bold}
+button{display:block;margin:30px auto;padding:14px 40px;
+border:none;border-radius:30px;font-size:16px;font-weight:bold;
+background:#ffd700;color:#000;cursor:pointer}
+button:disabled{opacity:.5}
+@media(max-width:600px){.teams{flex-direction:column}}
 </style>
 </head>
 
 <body>
 
 <h1>Round of 32</h1>
-<div class="container" id="matches"></div>
+<div id="matches"></div>
 
-<button id="nextBtn" class="next-btn" disabled>
-Proceed to Round of 16 →
-</button>
+<button id="nextBtn" disabled>Proceed to Round of 16 →</button>
 
 <script>
-/* ===== LOAD DATA FROM GROUP STAGE ===== */
 const groups = JSON.parse(localStorage.getItem("groupResults"));
-const bestThird = JSON.parse(localStorage.getItem("bestThirdTeams"));
-
-if(!groups || !bestThird || bestThird.length !== 8){
-  alert("Group stage data missing or incomplete");
+const third = JSON.parse(localStorage.getItem("bestThirdTeams"));
+if(!groups || !third || third.length!==8){
+  alert("Group stage data missing");
 }
 
-/* ===== HELPER ===== */
-const thirdPool = {
-  AB CDF: bestThird,
-};
+const M = [
+  [73, groups.A.second, groups.B.second],
+  [74, groups.E.first,  third[0]],
+  [75, groups.F.first,  groups.C.second],
+  [76, groups.C.first,  groups.F.second],
 
-function takeThird(){
-  return bestThird.shift();
-}
+  [77, groups.I.first,  third[1]],
+  [78, groups.E.second, groups.I.second],
+  [79, groups.A.first,  third[2]],
 
-/* ===== OFFICIAL MATCHES 73–88 ===== */
-const matchesData = [
-  { id:73, home: groups.A.second, away: groups.B.second },
-  { id:74, home: groups.E.first,  away: takeThird() },
-  { id:75, home: groups.F.first,  away: groups.C.second },
-  { id:76, home: groups.C.first,  away: groups.F.second },
+  [80, groups.L.first,  third[3]],
+  [81, groups.D.first,  third[4]],
+  [82, groups.G.first,  third[5]],
 
-  { id:77, home: groups.I.first,  away: takeThird() },
-  { id:78, home: groups.E.second, away: groups.I.second },
-  { id:79, home: groups.A.first,  away: takeThird() },
+  [83, groups.K.second, groups.L.second],
+  [84, groups.H.first,  groups.J.second],
+  [85, groups.B.first,  third[6]],
 
-  { id:80, home: groups.L.first,  away: takeThird() },
-  { id:81, home: groups.D.first,  away: takeThird() },
-  { id:82, home: groups.G.first,  away: takeThird() },
-
-  { id:83, home: groups.K.second, away: groups.L.second },
-  { id:84, home: groups.H.first,  away: groups.J.second },
-  { id:85, home: groups.B.first,  away: takeThird() },
-
-  { id:86, home: groups.J.first,  away: groups.H.second },
-  { id:87, home: groups.K.first,  away: takeThird() },
-  { id:88, home: groups.D.second, away: groups.G.second }
+  [86, groups.J.first,  groups.H.second],
+  [87, groups.K.first,  third[7]],
+  [88, groups.D.second, groups.G.second]
 ];
 
-/* ===== RENDER MATCHES ===== */
-const container = document.getElementById("matches");
-const winners = {};
+const box=document.getElementById("matches");
+const winners={};
 
-matchesData.forEach(match=>{
-  const div = document.createElement("div");
-  div.className="match";
-  div.innerHTML=`
-    <div class="match-title">Match ${match.id}</div>
+M.forEach(m=>{
+  const d=document.createElement("div");
+  d.className="match";
+  d.innerHTML=`
+    <div class="title">Match ${m[0]}</div>
     <div class="teams">
-      <div class="team">${match.home}</div>
-      <div class="team">${match.away}</div>
-    </div>
-  `;
-  const teams = div.querySelectorAll(".team");
-  teams.forEach(t=>{
-    t.onclick=()=>{
-      teams.forEach(x=>x.classList.remove("selected"));
-      t.classList.add("selected");
-      winners[match.id]=t.textContent;
-      checkDone();
-    };
-  });
-  container.appendChild(div);
-});
-
-function checkDone(){
-  document.getElementById("nextBtn").disabled =
-    Object.keys(winners).length !== 16;
-}
-
-document.getElementById("nextBtn").onclick=()=>{
-  localStorage.setItem("matchWinners",JSON.stringify(winners));
-  window.location.href="round16.html";
-};
-</script>
-
-</body>
-</html>
+      <div class="team">${m[1]}</div>
+      <div class="team">${m[2]}</div>
+    </div>`;
+  const t=d.querySelectorAll(".team");
+  t.forEach(x=>{
+    x.onclick=()=>{
+      t.forEach(y=>y.classList.remove("selected"));
+      x.classList.add("selected");
+      winners
