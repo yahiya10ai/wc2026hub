@@ -8,8 +8,8 @@
 <style>
 body{
   margin:0;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background: radial-gradient(circle at top, #0b1d2a, #020b12);
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:radial-gradient(circle at top,#0b1d2a,#020b12);
   color:#fff;
 }
 
@@ -19,7 +19,6 @@ header{
   font-size:30px;
   font-weight:800;
   background:linear-gradient(90deg,#0f2027,#203a43,#2c5364);
-  letter-spacing:1px;
 }
 
 .container{
@@ -74,25 +73,13 @@ header{
   font-size:15px;
 }
 
-.selected-1{
-  background:linear-gradient(90deg,#1b5e20,#2e7d32);
-}
-.selected-2{
-  background:linear-gradient(90deg,#0d47a1,#1565c0);
-}
-.selected-3{
-  background:linear-gradient(90deg,#f57c00,#fb8c00);
-  color:#000;
-}
+.selected-1{ background:linear-gradient(90deg,#1b5e20,#2e7d32); }
+.selected-2{ background:linear-gradient(90deg,#0d47a1,#1565c0); }
+.selected-3{ background:linear-gradient(90deg,#f57c00,#fb8c00); color:#000; }
 
 .selected-1 .team,
-.selected-2 .team{
-  font-weight:700;
-}
-
-.selected-3 .team{
-  font-weight:800;
-}
+.selected-2 .team{ font-weight:700; }
+.selected-3 .team{ font-weight:800; }
 
 .footer{
   text-align:center;
@@ -122,7 +109,6 @@ button:disabled{
 }
 </style>
 </head>
-
 <body>
 
 <header>FIFA World Cup 2026 – Group Stage</header>
@@ -159,7 +145,6 @@ const MAX_THIRD = 8;
 // BUILD GROUP CARDS
 for (const g in groupsData) {
   picks[g] = [];
-
   const card = document.createElement("div");
   card.className = "group-card";
   card.innerHTML = `<div class="group-title">Group ${g}</div>`;
@@ -242,12 +227,18 @@ function validate(){
   msg.textContent="All set! Proceed to Round of 32";
 }
 
-// GO TO ROUND32
+// PROCEED BUTTON
 document.getElementById("nextBtn").onclick = ()=>{
+  console.log("Button clicked!");
   localStorage.setItem("wc2026_groups",JSON.stringify(picks));
   window.location.href="round32.html";
 };
 
+// FORCE BUTTON ENABLE FOR TESTING (optional, remove in production)
+// document.getElementById("nextBtn").disabled = false;
+// document.getElementById("nextBtn").style.cursor="pointer";
+
 </script>
+
 </body>
 </html>
