@@ -4,200 +4,217 @@
 <meta charset="UTF-8">
 <title>FIFA World Cup 2026 – Group Stage</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body {
-  font-family:"Segoe UI", Arial, sans-serif;
+body{
   margin:0;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: radial-gradient(circle at top, #0b1d2a, #020b12);
   color:#fff;
 }
-header {
+
+/* HEADER */
+header{
   text-align:center;
-  padding:25px;
+  padding:22px;
   font-size:30px;
-  font-weight:700;
-  background: rgba(0,0,0,0.7);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  font-weight:800;
+  background:linear-gradient(90deg,#0f2027,#203a43,#2c5364);
+  letter-spacing:1px;
 }
-.container {
-  max-width:1000px;
-  margin:20px auto;
+
+/* LAYOUT */
+.container{
+  max-width:1100px;
+  margin:30px auto;
+  padding:0 15px;
   display:grid;
-  grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-  gap:20px;
-  padding:0 10px;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:24px;
 }
-.group-card {
-  background: rgba(255,255,255,0.05);
-  border-radius:15px;
-  padding:15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  transition:0.3s;
+
+/* GROUP CARD */
+.group-card{
+  background:rgba(255,255,255,0.04);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 24px rgba(0,0,0,.6);
 }
-.group-card:hover {
-  background: rgba(255,255,255,0.1);
-}
-.group-name {
+
+/* GROUP HEADER */
+.group-title{
+  background:#0f2a3c;
+  padding:12px;
   font-weight:700;
-  font-size:22px;
-  margin-bottom:12px;
-  text-shadow:1px 1px 3px #000;
+  font-size:20px;
   text-align:center;
+  border-bottom:1px solid rgba(255,255,255,.1);
 }
-.teams {
+
+/* TABLE */
+.table{
+  width:100%;
+}
+
+.row{
   display:grid;
-  grid-template-columns: repeat(3,1fr);
-  gap:10px;
-}
-.team {
-  padding:10px;
-  border-radius:10px;
-  text-align:center;
+  grid-template-columns:40px 1fr;
+  padding:12px 14px;
+  align-items:center;
   cursor:pointer;
-  background: rgba(0,0,0,0.2);
-  transition:0.3s;
+  transition:.25s;
+  border-bottom:1px solid rgba(255,255,255,.05);
 }
-.team:hover {
-  background: rgba(0,255,153,0.3);
-  transform: scale(1.05);
+
+.row:hover{
+  background:rgba(0,255,153,.15);
 }
-.team.selected {
-  background:#00ff99;
-  color:#000;
+
+.pos{
   font-weight:700;
-  box-shadow:0 0 10px #00ff99;
+  opacity:.85;
 }
-.button-container {
+
+.team{
+  font-size:15px;
+}
+
+/* SELECTED STATES */
+.selected-1{
+  background:linear-gradient(90deg,#1b5e20,#2e7d32);
+}
+.selected-2{
+  background:linear-gradient(90deg,#0d47a1,#1565c0);
+}
+.selected-3{
+  background:linear-gradient(90deg,#f57c00,#fb8c00);
+  color:#000;
+}
+
+.selected-1 .team,
+.selected-2 .team{
+  font-weight:700;
+}
+
+.selected-3 .team{
+  font-weight:800;
+}
+
+/* FOOTER */
+.footer{
   text-align:center;
-  margin-top:30px;
+  margin:30px 0 10px;
+  opacity:.9;
 }
-button {
-  padding:16px 50px;
+
+button{
+  margin-top:15px;
+  padding:16px 48px;
+  border-radius:40px;
   font-size:18px;
   border:none;
-  border-radius:40px;
-  background:#00ff99;
+  background:#00e5a8;
   cursor:pointer;
-  box-shadow:0 4px 12px rgba(0,0,0,0.5);
-  transition:0.3s;
+  font-weight:700;
+  box-shadow:0 6px 20px rgba(0,0,0,.5);
 }
-button:disabled {
+
+button:disabled{
   background:#555;
   cursor:not-allowed;
-  box-shadow:none;
 }
-@media(max-width:600px) {
-  .teams { grid-template-columns: 1fr; }
-  button { width:100%; font-size:16px; }
+
+/* MOBILE */
+@media(max-width:600px){
+  header{font-size:24px;}
 }
 </style>
 </head>
+
 <body>
+
 <header>FIFA World Cup 2026 – Group Stage</header>
-<div class="container" id="groupsContainer"></div>
-<div class="button-container">
-  <div style="margin-bottom:10px;">Select only 8 best third-place teams from all groups</div>
-  <button id="nextBtn" disabled onclick="proceedNext()">Proceed to Round of 32</button>
+
+<div class="container" id="groups"></div>
+
+<div class="footer">
+  Select 1st, 2nd from all groups and only <b>8 best 3rd-place teams</b>
+  <br>
+  <button id="nextBtn" disabled onclick="goNext()">Proceed to Playoffs</button>
 </div>
 
 <script>
-// 2026 World Cup Groups
 const groupsData = {
-  A:["Mexico","South Africa","South Korea","Playoff D Winner"],
-  B:["Canada","Switzerland","Qatar","Playoff A Winner"],
-  C:["Brazil","Morocco","Haiti","Scotland"],
-  D:["United States","Paraguay","Australia","Playoff C Winner"],
-  E:["Germany","Ecuador","Ivory Coast","Curaçao"],
-  F:["Netherlands","Japan","Playoff B Winner","Tunisia"],
-  G:["Belgium","Egypt","Iran","New Zealand"],
-  H:["Spain","Uruguay","Saudi Arabia","Cabo Verde"],
-  I:["France","Senegal","Norway","Playoff 2 Winner"],
-  J:["Argentina","Algeria","Austria","Jordan"],
-  K:["Portugal","Colombia","Uzbekistan","Playoff 1 Winner"],
-  L:["England","Croatia","Ghana","Panama"]
+A:["Mexico","South Africa","South Korea","Playoff D Winner"],
+B:["Canada","Switzerland","Qatar","Playoff A Winner"],
+C:["Brazil","Morocco","Haiti","Scotland"],
+D:["USA","Paraguay","Australia","Playoff C Winner"],
+E:["Germany","Ecuador","Ivory Coast","Curaçao"],
+F:["Netherlands","Japan","Playoff B Winner","Tunisia"],
+G:["Belgium","Egypt","Iran","New Zealand"],
+H:["Spain","Uruguay","Saudi Arabia","Cabo Verde"],
+I:["France","Senegal","Norway","Playoff 2 Winner"],
+J:["Argentina","Algeria","Austria","Jordan"],
+K:["Portugal","Colombia","Uzbekistan","Playoff 1 Winner"],
+L:["England","Croatia","Ghana","Panama"]
 };
 
-const groupPicks = {};
-let best3rdSelectedCount = 0;
-const max3rd = 8;
-const container = document.getElementById("groupsContainer");
+const picks = {};
+let thirdCount = 0;
 
-Object.keys(groupsData).forEach(group=>{
+const container = document.getElementById("groups");
+
+for(const g in groupsData){
   const card = document.createElement("div");
   card.className="group-card";
-  const title = document.createElement("div");
-  title.className="group-name";
-  title.textContent="Group "+group;
-  card.appendChild(title);
-  const teamsDiv = document.createElement("div");
-  teamsDiv.className="teams";
 
-  groupsData[group].forEach((team,index)=>{
-    const t = document.createElement("div");
-    t.className="team";
-    t.textContent=team;
-    t.onclick = ()=>{
-      if(!groupPicks[group]) groupPicks[group]=[];
-      const idx = groupPicks[group].indexOf(team);
-      if(idx>-1){
-        groupPicks[group].splice(idx,1);
-        t.classList.remove("selected");
-        if(index===2) best3rdSelectedCount--;
+  card.innerHTML = `<div class="group-title">Group ${g}</div>`;
+  const table = document.createElement("div");
+  table.className="table";
+
+  groupsData[g].forEach((team,i)=>{
+    const row = document.createElement("div");
+    row.className="row";
+    row.innerHTML = `<div class="pos">${i+1}</div><div class="team">${team}</div>`;
+
+    row.onclick = ()=>{
+      picks[g] ??= [];
+
+      if(row.classList.contains("selected-1") || row.classList.contains("selected-2") || row.classList.contains("selected-3")){
+        if(i===2) thirdCount--;
+        row.className="row";
+        picks[g] = picks[g].filter(t=>t!==team);
       } else {
-        if(index<2 && groupPicks[group].length<2){
-          groupPicks[group].push(team);
-          t.classList.add("selected");
-        } else if(index===2 && best3rdSelectedCount<max3rd){
-          groupPicks[group].push(team);
-          t.classList.add("selected");
-          best3rdSelectedCount++;
+        if(i<2 && picks[g].length<2){
+          row.classList.add(i===0?"selected-1":"selected-2");
+          picks[g].push(team);
+        }
+        if(i===2 && thirdCount<8){
+          row.classList.add("selected-3");
+          picks[g].push(team);
+          thirdCount++;
         }
       }
-      update3rdTeams();
-      checkAllSelected();
-    }
-    teamsDiv.appendChild(t);
+      check();
+    };
+
+    table.appendChild(row);
   });
 
-  card.appendChild(teamsDiv);
+  card.appendChild(table);
   container.appendChild(card);
-});
-
-function update3rdTeams(){
-  if(best3rdSelectedCount>=max3rd){
-    document.querySelectorAll(".group-card").forEach(card=>{
-      const third = card.querySelectorAll(".team")[2];
-      if(!third.classList.contains("selected")){
-        third.style.pointerEvents="none";
-        third.style.opacity=0.4;
-      }
-    });
-  } else {
-    document.querySelectorAll(".group-card").forEach(card=>{
-      const third = card.querySelectorAll(".team")[2];
-      if(!third.classList.contains("selected")){
-        third.style.pointerEvents="auto";
-        third.style.opacity=1;
-      }
-    });
-  }
 }
 
-function checkAllSelected(){
-  const allPicked = Object.keys(groupsData).every(g=>groupPicks[g]?.length>=2) && best3rdSelectedCount===max3rd;
-  document.getElementById("nextBtn").disabled = !allPicked;
+function check(){
+  const ok = Object.keys(groupsData).every(g=>picks[g]?.length>=2) && thirdCount===8;
+  document.getElementById("nextBtn").disabled = !ok;
 }
 
-function proceedNext(){
-  const picksArray = Object.keys(groupPicks).map(g=>({
-    group:g,
-    first:groupPicks[g][0],
-    second:groupPicks[g][1],
-    third:groupPicks[g][2]||""
-  }));
-  localStorage.setItem("wc2026_group_picks", JSON.stringify(picksArray));
+function goNext(){
+  localStorage.setItem("wc2026_groups",JSON.stringify(picks));
   window.location.href="round32.html";
 }
 </script>
+
 </body>
 </html>
