@@ -13,7 +13,6 @@ body{
   color:#fff;
 }
 
-/* HEADER */
 header{
   text-align:center;
   padding:22px;
@@ -23,7 +22,6 @@ header{
   letter-spacing:1px;
 }
 
-/* LAYOUT */
 .container{
   max-width:1100px;
   margin:30px auto;
@@ -33,7 +31,6 @@ header{
   gap:24px;
 }
 
-/* GROUP CARD */
 .group-card{
   background:rgba(255,255,255,0.04);
   border-radius:14px;
@@ -41,7 +38,6 @@ header{
   box-shadow:0 8px 24px rgba(0,0,0,.6);
 }
 
-/* GROUP HEADER */
 .group-title{
   background:#0f2a3c;
   padding:12px;
@@ -51,7 +47,6 @@ header{
   border-bottom:1px solid rgba(255,255,255,.1);
 }
 
-/* TABLE */
 .table{
   width:100%;
 }
@@ -79,7 +74,6 @@ header{
   font-size:15px;
 }
 
-/* SELECTED STATES */
 .selected-1{
   background:linear-gradient(90deg,#1b5e20,#2e7d32);
 }
@@ -100,37 +94,29 @@ header{
   font-weight:800;
 }
 
-/* FOOTER */
 .footer{
   text-align:center;
   margin:30px 0 10px;
   opacity:.9;
 }
-  
-<div id="statusMsg" style="margin-bottom:10px;opacity:.85"></div>
 
-<button 
-  id="nextBtn"
-  onclick="goToRound32()"
-  disabled
-  style="
-    padding:16px 32px;
-    font-size:18px;
-    font-weight:600;
-    border:none;
-    border-radius:12px;
-    background:linear-gradient(135deg,#1e90ff,#0066ff);
-    color:white;
-    cursor:not-allowed;
-    transition:.3s;
-  "
->
-  Proceed to Round of 32
-</button>
+button{
+  margin-top:15px;
+  padding:16px 48px;
+  border-radius:40px;
+  font-size:18px;
+  border:none;
+  background:#00e5a8;
+  cursor:pointer;
+  font-weight:700;
+  box-shadow:0 6px 20px rgba(0,0,0,.5);
+}
 
-<p id="statusMsg" style="margin-top:10px;opacity:.8"></p>
+button:disabled{
+  background:#555;
+  cursor:not-allowed;
+}
 
-/* MOBILE */
 @media(max-width:600px){
   header{font-size:24px;}
 }
@@ -144,11 +130,12 @@ header{
 <div class="container" id="groups"></div>
 
 <div class="footer">
-  Select 1st, 2nd from all groups and only <b>8 best 3rd-place teams</b>
-  <br>
-  <button id="nextBtn" disabled onclick="goNext()">Proceed to Playoffs</button>
+  <div id="statusMsg"></div>
+  <button id="nextBtn" disabled>Proceed to Round of 32</button>
 </div>
+
 <script>
+// GROUP DATA
 const groupsData = {
 A:["Mexico","South Africa","South Korea","Playoff D Winner"],
 B:["Canada","Switzerland","Qatar","Playoff A Winner"],
@@ -165,43 +152,41 @@ L:["England","Croatia","Ghana","Panama"]
 };
 
 const container = document.getElementById("groups");
-const picks = {}; // { A: [team1, team2, team3], ... }
+const picks = {};
 let totalThirdCount = 0;
 const MAX_THIRD = 8;
 
-for (const group in groupsData) {
-  picks[group] = [];
+// BUILD GROUP CARDS
+for (const g in groupsData) {
+  picks[g] = [];
 
   const card = document.createElement("div");
   card.className = "group-card";
-  card.innerHTML = `<div class="group-title">Group ${group}</div>`;
-
+  card.innerHTML = `<div class="group-title">Group ${g}</div>`;
   const table = document.createElement("div");
+  table.className="table";
 
-  groupsData[group].forEach(team => {
+  groupsData[g].forEach(team=>{
     const row = document.createElement("div");
-    row.className = "row";
+    row.className="row";
     row.innerHTML = `<div class="pos"></div><div class="team">${team}</div>`;
 
     row.onclick = () => {
-      const index = picks[group].indexOf(team);
+      const index = picks[g].indexOf(team);
 
-      // REMOVE selection
-      if (index !== -1) {
-        if (index === 2) totalThirdCount--;
-        picks[group].splice(index, 1);
-        updateGroupUI(group, table);
-      } 
-      // ADD selection
-      else {
-        if (picks[group].length < 3) {
-          if (picks[group].length === 2 && totalThirdCount >= MAX_THIRD) {
-            alert("Only 8 best third-place teams are allowed.");
+      if(index !== -1){
+        if(index === 2) totalThirdCount--;
+        picks[g].splice(index,1);
+        updateGroupUI(g, table);
+      } else {
+        if(picks[g].length < 3){
+          if(picks[g].length === 2 && totalThirdCount >= MAX_THIRD){
+            alert("Only 8 best third-place teams allowed.");
             return;
           }
-          picks[group].push(team);
-          if (picks[group].length === 3) totalThirdCount++;
-          updateGroupUI(group, table);
+          picks[g].push(team);
+          if(picks[g].length === 3) totalThirdCount++;
+          updateGroupUI(g, table);
         }
       }
       validate();
@@ -214,57 +199,55 @@ for (const group in groupsData) {
   container.appendChild(card);
 }
 
-function updateGroupUI(group, table) {
-  [...table.children].forEach(row => {
+// UPDATE UI
+function updateGroupUI(group, table){
+  [...table.children].forEach(row=>{
     row.classList.remove("selected-1","selected-2","selected-3");
     row.querySelector(".pos").textContent = "";
   });
 
-  picks[group].forEach((team, i) => {
-    [...table.children].forEach(row => {
-      if (row.querySelector(".team").textContent === team) {
-        row.classList.add(i === 0 ? "selected-1" : i === 1 ? "selected-2" : "selected-3");
-        row.querySelector(".pos").textContent = i + 1;
+  picks[group].forEach((team,i)=>{
+    [...table.children].forEach(row=>{
+      if(row.querySelector(".team").textContent === team){
+        row.classList.add(i===0?"selected-1":i===1?"selected-2":"selected-3");
+        row.querySelector(".pos").textContent = i+1;
       }
     });
   });
 }
 
+// VALIDATE BUTTON
 function validate(){
-  const allGroupsReady = Object.keys(groupsData).every(
-    g => picks[g] && picks[g].length === 3
-  );
-
   const btn = document.getElementById("nextBtn");
   const msg = document.getElementById("statusMsg");
 
-  if(!allGroupsReady){
-    btn.disabled = true;
-    msg.textContent = "Select 3 teams in every group";
+  for(const g in picks){
+    if(picks[g].length !== 3){
+      btn.disabled=true;
+      btn.style.cursor="not-allowed";
+      msg.textContent="Select 3 teams in every group";
+      return;
+    }
+  }
+
+  if(totalThirdCount !== MAX_THIRD){
+    btn.disabled=true;
+    btn.style.cursor="not-allowed";
+    msg.textContent=`Select exactly 8 best third-place teams (${totalThirdCount}/8)`;
     return;
   }
 
-  if(totalThirdCount !== 8){
-    btn.disabled = true;
-    msg.textContent = "Select exactly 8 best third-place teams (" + totalThirdCount + "/8)";
-    return;
-  }
-
-  msg.textContent = "All set! You can proceed to playoffs";
-  btn.disabled = false;
+  btn.disabled=false;
+  btn.style.cursor="pointer";
+  msg.textContent="All set! Proceed to Round of 32";
 }
-  
-function goToRound32(){
-  console.log("Button clicked");
 
-  // Save final group picks
-  localStorage.setItem("wc2026_groups", JSON.stringify(picks));
-
-  // Go to Round of 32
-  window.location.href = "round32.html";
-}
+// GO TO ROUND32
+document.getElementById("nextBtn").onclick = ()=>{
+  localStorage.setItem("wc2026_groups",JSON.stringify(picks));
+  window.location.href="round32.html";
+};
 
 </script>
-
 </body>
 </html>
