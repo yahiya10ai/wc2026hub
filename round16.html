@@ -1,155 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>FIFA 2026 – Round of 16</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>FIFA World Cup 2026 – Round of 16</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body{
-      margin:0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-      color:#fff;
-    }
-
-    h1{
-      text-align:center;
-      margin:20px 0;
-      letter-spacing:1px;
-    }
-
-    .container{
-      max-width:1000px;
-      margin:auto;
-      padding:15px;
-    }
-
-    .match{
-      background: rgba(255,255,255,0.1);
-      border-radius:12px;
-      padding:15px;
-      margin-bottom:15px;
-    }
-
-    .match-title{
-      font-size:14px;
-      opacity:0.8;
-      margin-bottom:10px;
-      text-align:center;
-    }
-
-    .teams{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .team{
-      flex:1;
-      padding:12px;
-      text-align:center;
-      border-radius:10px;
-      background: rgba(0,0,0,0.3);
-      cursor:pointer;
-      transition:0.3s;
-      border:2px solid transparent;
-    }
-
-    .team:hover{
-      background: rgba(255,255,255,0.15);
-    }
-
-    .team.selected{
-      background:#00c853;
-      color:#000;
-      font-weight:bold;
-      border-color:#fff;
-    }
-
-    .next-btn{
-      margin:30px auto;
-      display:block;
-      padding:15px 35px;
-      font-size:16px;
-      font-weight:bold;
-      border:none;
-      border-radius:30px;
-      background:#ffd700;
-      color:#000;
-      cursor:pointer;
-    }
-
-    .next-btn:disabled{
-      opacity:0.5;
-      cursor:not-allowed;
-    }
-
-    @media(max-width:600px){
-      .teams{
-        flex-direction:column;
-      }
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:radial-gradient(circle at top,#0b1d2a,#020b12);
+  color:#fff;
+}
+header{
+  text-align:center;
+  padding:22px;
+  font-size:28px;
+  font-weight:800;
+  background:linear-gradient(90deg,#0f2027,#203a43,#2c5364);
+}
+.section{
+  max-width:1100px;
+  margin:30px auto;
+  padding:0 15px;
+}
+.round-title{
+  text-align:center;
+  font-size:22px;
+  margin:25px 0 15px;
+  font-weight:700;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+}
+.match{
+  background:rgba(255,255,255,.05);
+  border-radius:14px;
+  overflow:hidden;
+}
+.team{
+  padding:14px;
+  cursor:pointer;
+}
+.team:hover{background:rgba(0,255,153,.2);}
+.team.selected{
+  background:linear-gradient(90deg,#00c853,#64dd17);
+  color:#000;
+  font-weight:800;
+}
+.vs{text-align:center;opacity:.6;font-size:13px;}
+</style>
 </head>
 
 <body>
 
-<h1>Round of 16</h1>
+<header>FIFA World Cup 2026 – Round of 16</header>
 
-<div class="container" id="matches"></div>
-
-<button class="next-btn" id="nextBtn" disabled>
-  Proceed to Quarter Finals →
-</button>
+<div class="section">
+  <div class="round-title">Round of 16</div>
+  <div class="grid" id="r16"></div>
+</div>
 
 <script>
-  const r16Teams = JSON.parse(localStorage.getItem("r16Teams")) || [];
+const r32 = JSON.parse(localStorage.getItem("wc2026_r32"));
+if(!r32 || r32.length !== 16){
+  alert("Round of 32 not completed");
+  window.location.href="round32.html";
+}
 
-  if(r16Teams.length !== 16){
-    alert("Round of 16 teams not found. Go back and complete Round of 32.");
+// REAL FIFA 2026 R16 ORDER (from your fixture list)
+const r16Matches = [
+  r32[1], r32[4],   // Match 89
+  r32[0], r32[2],   // Match 90
+  r32[3], r32[5],   // Match 91
+  r32[6], r32[7],   // Match 92
+  r32[10], r32[11], // Match 93
+  r32[8], r32[9],   // Match 94
+  r32[12], r32[15], // Match 95
+  r32[13], r32[14]  // Match 96
+];
+
+let winners = [];
+
+function build(){
+  const box=document.getElementById("r16");
+  for(let i=0;i<r16Matches.length;i+=2){
+    const m=document.createElement("div"); m.className="match";
+    const a=document.createElement("div");
+    const b=document.createElement("div");
+    const vs=document.createElement("div");
+    a.className=b.className="team"; vs.className="vs"; vs.textContent="VS";
+    a.textContent=r16Matches[i];
+    b.textContent=r16Matches[i+1];
+
+    a.onclick=()=>pick(a,b,r16Matches[i]);
+    b.onclick=()=>pick(b,a,r16Matches[i+1]);
+
+    m.append(a,vs,b); box.appendChild(m);
   }
+}
 
-  const matchesDiv = document.getElementById("matches");
-  const winners = new Array(8).fill(null);
-
-  for(let i=0;i<16;i+=2){
-    const matchIndex = i/2;
-
-    const match = document.createElement("div");
-    match.className = "match";
-
-    match.innerHTML = `
-      <div class="match-title">Match ${matchIndex + 1}</div>
-      <div class="teams">
-        <div class="team" data-team="${r16Teams[i]}">${r16Teams[i]}</div>
-        <div class="team" data-team="${r16Teams[i+1]}">${r16Teams[i+1]}</div>
-      </div>
-    `;
-
-    const teamDivs = match.querySelectorAll(".team");
-
-    teamDivs.forEach(teamDiv=>{
-      teamDiv.onclick = () => {
-        teamDivs.forEach(t=>t.classList.remove("selected"));
-        teamDiv.classList.add("selected");
-        winners[matchIndex] = teamDiv.dataset.team;
-        checkComplete();
-      };
-    });
-
-    matchesDiv.appendChild(match);
+function pick(sel,other,team){
+  sel.classList.add("selected");
+  other.classList.remove("selected");
+  if(winners.length<8){
+    winners.push(team);
+    if(winners.length===8){
+      localStorage.setItem("wc2026_r16",JSON.stringify(winners));
+      window.location.href="quarterfinals.html";
+    }
   }
+}
 
-  function checkComplete(){
-    const done = winners.every(w => w !== null);
-    document.getElementById("nextBtn").disabled = !done;
-  }
-
-  document.getElementById("nextBtn").onclick = () => {
-    localStorage.setItem("quarterTeams", JSON.stringify(winners));
-    window.location.href = "quarters.html";
-  };
+build();
 </script>
 
 </body>
