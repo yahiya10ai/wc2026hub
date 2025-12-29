@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FIFA World Cup 2026 – Quarter Finals</title>
+<title>FIFA World Cup 2026 – Quarter-finals</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -12,7 +12,6 @@ body{
   background:radial-gradient(circle at top,#0b1d2a,#020b12);
   color:#fff;
 }
-
 header{
   text-align:center;
   padding:22px;
@@ -20,169 +19,81 @@ header{
   font-weight:800;
   background:linear-gradient(90deg,#0f2027,#203a43,#2c5364);
 }
-
 .section{
   max-width:1100px;
   margin:30px auto;
-  padding:0 15px;
 }
-
-.round-title{
-  text-align:center;
-  font-size:22px;
-  margin:25px 0 15px;
-  font-weight:700;
-}
-
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
   gap:20px;
 }
-
 .match{
   background:rgba(255,255,255,.05);
   border-radius:14px;
-  overflow:hidden;
-  box-shadow:0 6px 18px rgba(0,0,0,.6);
 }
-
 .team{
   padding:14px;
   cursor:pointer;
-  transition:.25s;
 }
-
-.team:hover{
-  background:rgba(0,255,153,.2);
-}
-
 .team.selected{
   background:linear-gradient(90deg,#00c853,#64dd17);
   color:#000;
   font-weight:800;
 }
-
-.vs{
-  text-align:center;
-  padding:6px;
-  opacity:.6;
-  font-size:13px;
-}
-
-.winner-card{
-  margin-top:40px;
-  text-align:center;
-  padding:30px;
-  border-radius:20px;
-  background:linear-gradient(135deg,#ffd700,#ffb300);
-  color:#000;
-  font-size:26px;
-  font-weight:900;
-  display:none;
-}
-
-@media(max-width:600px){
-  header{font-size:22px;}
-}
+.vs{text-align:center;opacity:.6;}
 </style>
 </head>
 
 <body>
 
-<header>FIFA World Cup 2026 – Knockouts</header>
+<header>FIFA World Cup 2026 – Quarter-finals</header>
 
 <div class="section">
-
-  <div class="round-title">Quarter-finals</div>
   <div class="grid" id="qf"></div>
-
-  <div class="round-title">Semi-finals</div>
-  <div class="grid" id="sf"></div>
-
-  <div class="round-title">Final</div>
-  <div class="grid" id="final"></div>
-
-  <div class="winner-card" id="winnerCard">
-    🏆 World Cup 2026 Winner
-    <div id="winnerName"></div>
-  </div>
-
 </div>
 
 <script>
-// LOAD R16 WINNERS
 const r16 = JSON.parse(localStorage.getItem("wc2026_r16"));
-if(!r16 || r16.length !== 8){
-  alert("Round of 16 not completed.");
+if(!r16 || r16.length!==8){
+  alert("Round of 16 not completed");
   window.location.href="round16.html";
 }
 
-// GENERIC ROUND BUILDER
-function buildRound(containerId, teams, onWin){
-  const container = document.getElementById(containerId);
-  container.innerHTML = "";
+let winners=[];
 
-  for(let i=0;i<teams.length;i+=2){
-    const match = document.createElement("div");
-    match.className="match";
+function build(){
+  const g=document.getElementById("qf");
+  for(let i=0;i<8;i+=2){
+    const m=document.createElement("div"); m.className="match";
+    const a=document.createElement("div");
+    const b=document.createElement("div");
+    const vs=document.createElement("div");
+    a.className=b.className="team"; vs.className="vs"; vs.textContent="VS";
+    a.textContent=r16[i];
+    b.textContent=r16[i+1];
 
-    const t1 = document.createElement("div");
-    const t2 = document.createElement("div");
-    const vs = document.createElement("div");
+    a.onclick=()=>pick(a,b,r16[i]);
+    b.onclick=()=>pick(b,a,r16[i+1]);
 
-    t1.className="team";
-    t2.className="team";
-    vs.className="vs";
-
-    t1.textContent = teams[i];
-    t2.textContent = teams[i+1];
-    vs.textContent = "VS";
-
-    t1.onclick = ()=>{
-      t1.classList.add("selected");
-      t2.classList.remove("selected");
-      onWin(teams[i]);
-    };
-
-    t2.onclick = ()=>{
-      t2.classList.add("selected");
-      t1.classList.remove("selected");
-      onWin(teams[i+1]);
-    };
-
-    match.append(t1,vs,t2);
-    container.appendChild(match);
+    m.append(a,vs,b); g.appendChild(m);
   }
 }
 
-// PROGRESSION
-let qfWinners=[], sfWinners=[], finalWinners=[];
-
-// QUARTERS
-buildRound("qf", r16, t=>{
-  if(qfWinners.length<4) qfWinners.push(t);
-
-  if(qfWinners.length===4){
-    localStorage.setItem("wc2026_qf", JSON.stringify(qfWinners));
-
-    // SEMIS
-    buildRound("sf", qfWinners, t2=>{
-      if(sfWinners.length<2) sfWinners.push(t2);
-
-      if(sfWinners.length===2){
-        localStorage.setItem("wc2026_sf", JSON.stringify(sfWinners));
-
-        // FINAL
-        buildRound("final", sfWinners, t3=>{
-          document.getElementById("winnerCard").style.display="block";
-          document.getElementById("winnerName").textContent = t3;
-          localStorage.setItem("wc2026_winner", t3);
-        });
-      }
-    });
+function pick(sel,other,team){
+  sel.classList.add("selected");
+  other.classList.remove("selected");
+  if(winners.length<4){
+    winners.push(team);
+    if(winners.length===4){
+      localStorage.setItem("wc2026_qf",JSON.stringify(winners));
+      alert("Quarter-finals completed ✅");
+      // next → semis.html
+    }
   }
-});
+}
+
+build();
 </script>
 
 </body>
