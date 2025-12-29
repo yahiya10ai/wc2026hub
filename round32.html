@@ -13,225 +13,211 @@ body{
   color:#fff;
 }
 
-/* HEADER */
 header{
   text-align:center;
   padding:22px;
-  font-size:30px;
+  font-size:28px;
   font-weight:800;
   background:linear-gradient(90deg,#0f2027,#203a43,#2c5364);
 }
 
-/* LAYOUT */
 .section{
   max-width:1200px;
-  margin:40px auto;
+  margin:30px auto;
   padding:0 15px;
 }
 
 .round-title{
   text-align:center;
-  font-size:24px;
+  font-size:22px;
+  margin:25px 0 15px;
   font-weight:700;
-  margin-bottom:20px;
-  opacity:.95;
 }
 
-/* MATCH GRID */
-.matches{
+.grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:18px;
+  gap:20px;
 }
 
 .match{
-  background:rgba(255,255,255,0.05);
+  background:rgba(255,255,255,.05);
   border-radius:14px;
-  box-shadow:0 6px 20px rgba(0,0,0,.6);
   overflow:hidden;
+  box-shadow:0 6px 18px rgba(0,0,0,.6);
 }
 
 .team{
-  padding:14px 16px;
+  padding:14px;
   cursor:pointer;
   transition:.25s;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-
-.team:last-child{
-  border-bottom:none;
 }
 
 .team:hover{
-  background:rgba(0,255,153,.18);
+  background:rgba(0,255,153,.2);
 }
 
 .team.selected{
-  background:linear-gradient(90deg,#1b5e20,#2e7d32);
-  font-weight:700;
-}
-
-/* NEXT BUTTON */
-.next-btn{
-  display:block;
-  margin:35px auto;
-  padding:16px 46px;
-  font-size:18px;
-  border:none;
-  border-radius:40px;
-  background:#00e5a8;
-  cursor:pointer;
-  font-weight:700;
-  box-shadow:0 6px 20px rgba(0,0,0,.5);
-}
-
-.next-btn:disabled{
-  background:#555;
-  cursor:not-allowed;
-}
-
-/* WINNER */
-.winner{
-  text-align:center;
-  margin:60px 0;
-}
-
-.trophy{
-  font-size:70px;
-}
-
-.winner-name{
-  font-size:34px;
+  background:linear-gradient(90deg,#00c853,#64dd17);
+  color:#000;
   font-weight:800;
-  margin-top:10px;
+}
+
+.vs{
+  text-align:center;
+  padding:6px;
+  opacity:.6;
+  font-size:13px;
+}
+
+.winner-card{
+  margin-top:40px;
+  text-align:center;
+  padding:30px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#ffd700,#ffb300);
+  color:#000;
+  font-size:26px;
+  font-weight:900;
+  display:none;
+}
+
+@media(max-width:600px){
+  header{font-size:22px;}
 }
 </style>
 </head>
-
 <body>
 
 <header>FIFA World Cup 2026 – Playoffs</header>
 
-<div class="section" id="playoffs"></div>
+<div class="section">
+  <div class="round-title">Round of 32</div>
+  <div class="grid" id="r32"></div>
+
+  <div class="round-title">Round of 16</div>
+  <div class="grid" id="r16"></div>
+
+  <div class="round-title">Quarter-finals</div>
+  <div class="grid" id="qf"></div>
+
+  <div class="round-title">Semi-finals</div>
+  <div class="grid" id="sf"></div>
+
+  <div class="round-title">Final</div>
+  <div class="grid" id="final"></div>
+
+  <div class="winner-card" id="winnerCard">
+    🏆 World Cup 2026 Winner  
+    <div id="winnerName"></div>
+  </div>
+</div>
 
 <script>
-/* LOAD GROUP DATA */
+// LOAD GROUP DATA
 const groupData = JSON.parse(localStorage.getItem("wc2026_groups"));
-
 if(!groupData){
-  document.getElementById("playoffs").innerHTML =
-    "<h2 style='text-align:center'>Group data not found</h2>";
-  throw new Error("No group data");
+  alert("No group data found. Please complete group stage first.");
+  window.location.href="group.html";
 }
 
-/* BUILD 32 TEAMS */
-const first = [];
-const second = [];
-const third = [];
+// BUILD QUALIFIED TEAMS
+let first = [], second = [], third = [];
 
-Object.values(groupData).forEach(g=>{
-  first.push(g[0]);
-  second.push(g[1]);
-  third.push(g[2]);
-});
+for(const g in groupData){
+  first.push(groupData[g][0]);
+  second.push(groupData[g][1]);
+  if(groupData[g][2]) third.push(groupData[g][2]);
+}
 
-const teams32 = [...first, ...second, ...third]; // 12+12+8 = 32
+// Only 8 best 3rd (already ensured in group stage)
+third = third.slice(0,8);
 
-/* GENERIC KNOCKOUT BUILDER */
-function buildRound(title, teams, onComplete){
-  const section = document.createElement("div");
-  section.className="section";
+// ROUND OF 32 PAIRING (SIMPLE & CLEAN)
+let r32Teams = [
+  first[0], second[1],
+  first[1], second[0],
+  first[2], third[0],
+  first[3], third[1],
+  first[4], second[5],
+  first[5], second[4],
+  first[6], third[2],
+  first[7], third[3],
+  first[8], second[9],
+  first[9], second[8],
+  first[10], third[4],
+  first[11], third[5],
+  second[2], second[3],
+  second[6], second[7],
+  third[6], third[7]
+];
 
-  const h = document.createElement("div");
-  h.className="round-title";
-  h.textContent=title;
-  section.appendChild(h);
-
-  const grid = document.createElement("div");
-  grid.className="matches";
-
-  const winners = [];
+// GENERIC ROUND BUILDER
+function buildRound(containerId, teams, nextCallback){
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
 
   for(let i=0;i<teams.length;i+=2){
     const match = document.createElement("div");
     match.className="match";
 
     const t1 = document.createElement("div");
-    t1.className="team";
-    t1.textContent = teams[i];
-
     const t2 = document.createElement("div");
+
+    t1.className="team";
     t2.className="team";
+
+    t1.textContent = teams[i];
     t2.textContent = teams[i+1];
 
     t1.onclick = ()=>{
       t1.classList.add("selected");
       t2.classList.remove("selected");
-      winners[i/2] = teams[i];
-      check();
+      nextCallback(teams[i]);
     };
 
     t2.onclick = ()=>{
       t2.classList.add("selected");
       t1.classList.remove("selected");
-      winners[i/2] = teams[i+1];
-      check();
+      nextCallback(teams[i+1]);
     };
 
     match.appendChild(t1);
+    match.appendChild(document.createElement("div")).className="vs";
     match.appendChild(t2);
-    grid.appendChild(match);
-  }
 
-  section.appendChild(grid);
-
-  const btn = document.createElement("button");
-  btn.className="next-btn";
-  btn.textContent="Proceed";
-  btn.disabled=true;
-
-  btn.onclick = ()=> onComplete(winners);
-
-  section.appendChild(btn);
-  document.getElementById("playoffs").appendChild(section);
-
-  function check(){
-    if(winners.filter(Boolean).length === teams.length/2){
-      btn.disabled=false;
-    }
+    container.appendChild(match);
   }
 }
 
-/* BUILD ALL ROUNDS */
-buildRound("Round of 32", teams32, r16=>{
-  buildRound("Round of 16", r16, qf=>{
-    buildRound("Quarterfinals", qf, sf=>{
-      buildRound("Semifinals", sf, final=>{
-        showWinner(final);
-      });
+// PROGRESSION LOGIC
+let r16=[], qf=[], sf=[], final=[];
+
+buildRound("r32", r32Teams, t=>{
+  if(r16.length<16) r16.push(t);
+  if(r16.length===16){
+    buildRound("r16", r16, t2=>{
+      if(qf.length<8) qf.push(t2);
+      if(qf.length===8){
+        buildRound("qf", qf, t3=>{
+          if(sf.length<4) sf.push(t3);
+          if(sf.length===4){
+            buildRound("sf", sf, t4=>{
+              if(final.length<2) final.push(t4);
+              if(final.length===2){
+                buildRound("final", final, t5=>{
+                  document.getElementById("winnerCard").style.display="block";
+                  document.getElementById("winnerName").textContent=t5;
+                });
+              }
+            });
+          }
+        });
+      }
     });
-  });
+  }
 });
-
-/* FINAL WINNER */
-function showWinner(finalTeams){
-  const section = document.createElement("div");
-  section.className="winner";
-
-  const trophy = document.createElement("div");
-  trophy.className="trophy";
-  trophy.textContent="🏆";
-
-  const name = document.createElement("div");
-  name.className="winner-name";
-  name.textContent = "Winner: " + finalTeams[0];
-
-  section.appendChild(trophy);
-  section.appendChild(name);
-  document.getElementById("playoffs").appendChild(section);
-}
 </script>
 
 </body>
 </html>
-
