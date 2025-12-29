@@ -2,86 +2,236 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FIFA World Cup 2026 – Round of 32</title>
+<title>FIFA World Cup 2026 – Playoffs</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body { margin:0; font-family:"Segoe UI", Arial, sans-serif; background:#0b0b0b; color:#fff; }
-header{ text-align:center; padding:20px; font-size:28px; font-weight:700; background:#111; }
-.container{ max-width:900px; margin:20px auto; padding:0 10px; }
-.match{ background:rgba(255,255,255,0.1); padding:12px 16px; margin:12px 0; border-radius:12px; }
-.team{ padding:8px 12px; border-radius:8px; background:rgba(0,0,0,0.3); cursor:pointer; margin:6px 0; transition:0.2s; }
-.team:hover{ background:rgba(0,0,0,0.5); }
-.team.selected{ background:#00ff99; color:#000; font-weight:700; }
-.match-info{ font-size:14px; margin-bottom:8px; color:#aaa; }
-button{ display:block; margin:30px auto; padding:14px 40px; font-size:18px; border:none; border-radius:30px; background:#00ff99; cursor:pointer; }
-button:disabled{ background:#555; cursor:not-allowed; }
-@media(max-width:600px){ body{font-size:14px;} button{width:100%; font-size:16px;} }
+body{
+  margin:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:radial-gradient(circle at top,#0b1d2a,#020b12);
+  color:#fff;
+}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:22px;
+  font-size:30px;
+  font-weight:800;
+  background:linear-gradient(90deg,#0f2027,#203a43,#2c5364);
+}
+
+/* LAYOUT */
+.section{
+  max-width:1200px;
+  margin:40px auto;
+  padding:0 15px;
+}
+
+.round-title{
+  text-align:center;
+  font-size:24px;
+  font-weight:700;
+  margin-bottom:20px;
+  opacity:.95;
+}
+
+/* MATCH GRID */
+.matches{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+}
+
+.match{
+  background:rgba(255,255,255,0.05);
+  border-radius:14px;
+  box-shadow:0 6px 20px rgba(0,0,0,.6);
+  overflow:hidden;
+}
+
+.team{
+  padding:14px 16px;
+  cursor:pointer;
+  transition:.25s;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.team:last-child{
+  border-bottom:none;
+}
+
+.team:hover{
+  background:rgba(0,255,153,.18);
+}
+
+.team.selected{
+  background:linear-gradient(90deg,#1b5e20,#2e7d32);
+  font-weight:700;
+}
+
+/* NEXT BUTTON */
+.next-btn{
+  display:block;
+  margin:35px auto;
+  padding:16px 46px;
+  font-size:18px;
+  border:none;
+  border-radius:40px;
+  background:#00e5a8;
+  cursor:pointer;
+  font-weight:700;
+  box-shadow:0 6px 20px rgba(0,0,0,.5);
+}
+
+.next-btn:disabled{
+  background:#555;
+  cursor:not-allowed;
+}
+
+/* WINNER */
+.winner{
+  text-align:center;
+  margin:60px 0;
+}
+
+.trophy{
+  font-size:70px;
+}
+
+.winner-name{
+  font-size:34px;
+  font-weight:800;
+  margin-top:10px;
+}
 </style>
 </head>
+
 <body>
-<header>FIFA World Cup 2026 – Round of 32</header>
-<div class="container" id="matchesContainer"></div>
-<button id="nextBtn" disabled onclick="proceedNext()">Proceed to Round of 16</button>
+
+<header>FIFA World Cup 2026 – Playoffs</header>
+
+<div class="section" id="playoffs"></div>
 
 <script>
-// Load picks
-const groupPicks = JSON.parse(localStorage.getItem("wc2026_group_picks")||"[]");
-function getGroup(name){ return groupPicks.find(g=>g.group===name)||{first:name+"1",second:name+"2",third:name+"3"}; }
+/* LOAD GROUP DATA */
+const groupData = JSON.parse(localStorage.getItem("wc2026_groups"));
 
-// Official R32 fixture list
-const matches = [
-  {teams:[getGroup("A").second,getGroup("B").second], date:"Sunday, 28 June 2026", stadium:"Los Angeles Stadium"},
-  {teams:[getGroup("E").first,getGroup("A").third], date:"Monday, 29 June 2026", stadium:"Boston Stadium"},
-  {teams:[getGroup("F").first,getGroup("C").second], date:"Monday, 29 June 2026", stadium:"Estadio Monterrey"},
-  {teams:[getGroup("C").first,getGroup("F").second], date:"Monday, 29 June 2026", stadium:"Houston Stadium"},
-  {teams:[getGroup("I").first,getGroup("C").third], date:"Tuesday, 30 June 2026", stadium:"New York New Jersey Stadium"},
-  {teams:[getGroup("E").second,getGroup("I").second], date:"Tuesday, 30 June 2026", stadium:"Dallas Stadium"},
-  {teams:[getGroup("A").first,getGroup("C").third], date:"Tuesday, 30 June 2026", stadium:"Mexico City Stadium"},
-  {teams:[getGroup("L").first,getGroup("E").third], date:"Wednesday, 1 July 2026", stadium:"Atlanta Stadium"},
-  {teams:[getGroup("D").first,getGroup("B").third], date:"Wednesday, 1 July 2026", stadium:"San Francisco Bay Area Stadium"},
-  {teams:[getGroup("G").first,getGroup("A").third], date:"Wednesday, 1 July 2026", stadium:"Seattle Stadium"},
-  {teams:[getGroup("K").second,getGroup("L").second], date:"Thursday, 2 July 2026", stadium:"Toronto Stadium"},
-  {teams:[getGroup("H").first,getGroup("J").second], date:"Thursday, 2 July 2026", stadium:"Los Angeles Stadium"},
-  {teams:[getGroup("B").first,getGroup("E").third], date:"Thursday, 2 July 2026", stadium:"BC Place Vancouver"},
-  {teams:[getGroup("J").first,getGroup("H").second], date:"Friday, 3 July 2026", stadium:"Miami Stadium"},
-  {teams:[getGroup("K").first,getGroup("D").third], date:"Friday, 3 July 2026", stadium:"Kansas City Stadium"},
-  {teams:[getGroup("D").second,getGroup("G").second], date:"Friday, 3 July 2026", stadium:"Dallas Stadium"},
-];
+if(!groupData){
+  document.getElementById("playoffs").innerHTML =
+    "<h2 style='text-align:center'>Group data not found</h2>";
+  throw new Error("No group data");
+}
 
-// Render matches
-const container = document.getElementById("matchesContainer");
-matches.forEach((m,i)=>{
-  const matchDiv = document.createElement("div");
-  matchDiv.className="match";
-  const info = document.createElement("div");
-  info.className="match-info";
-  info.textContent=`Match ${73+i} – ${m.date} – ${m.stadium}`;
-  matchDiv.appendChild(info);
-  m.teams.forEach(team=>{
-    const d=document.createElement("div");
-    d.className="team";
-    d.textContent=team;
-    d.onclick=()=>{
-      matchDiv.querySelectorAll(".team").forEach(t=>t.classList.remove("selected"));
-      d.classList.add("selected");
-      checkAllSelected();
-    }
-    matchDiv.appendChild(d);
-  });
-  container.appendChild(matchDiv);
+/* BUILD 32 TEAMS */
+const first = [];
+const second = [];
+const third = [];
+
+Object.values(groupData).forEach(g=>{
+  first.push(g[0]);
+  second.push(g[1]);
+  third.push(g[2]);
 });
 
-function checkAllSelected(){
-  const allSelected=[...document.querySelectorAll(".match")].every(m=>m.querySelector(".team.selected"));
-  document.getElementById("nextBtn").disabled=!allSelected;
+const teams32 = [...first, ...second, ...third]; // 12+12+8 = 32
+
+/* GENERIC KNOCKOUT BUILDER */
+function buildRound(title, teams, onComplete){
+  const section = document.createElement("div");
+  section.className="section";
+
+  const h = document.createElement("div");
+  h.className="round-title";
+  h.textContent=title;
+  section.appendChild(h);
+
+  const grid = document.createElement("div");
+  grid.className="matches";
+
+  const winners = [];
+
+  for(let i=0;i<teams.length;i+=2){
+    const match = document.createElement("div");
+    match.className="match";
+
+    const t1 = document.createElement("div");
+    t1.className="team";
+    t1.textContent = teams[i];
+
+    const t2 = document.createElement("div");
+    t2.className="team";
+    t2.textContent = teams[i+1];
+
+    t1.onclick = ()=>{
+      t1.classList.add("selected");
+      t2.classList.remove("selected");
+      winners[i/2] = teams[i];
+      check();
+    };
+
+    t2.onclick = ()=>{
+      t2.classList.add("selected");
+      t1.classList.remove("selected");
+      winners[i/2] = teams[i+1];
+      check();
+    };
+
+    match.appendChild(t1);
+    match.appendChild(t2);
+    grid.appendChild(match);
+  }
+
+  section.appendChild(grid);
+
+  const btn = document.createElement("button");
+  btn.className="next-btn";
+  btn.textContent="Proceed";
+  btn.disabled=true;
+
+  btn.onclick = ()=> onComplete(winners);
+
+  section.appendChild(btn);
+  document.getElementById("playoffs").appendChild(section);
+
+  function check(){
+    if(winners.filter(Boolean).length === teams.length/2){
+      btn.disabled=false;
+    }
+  }
 }
 
-function proceedNext(){
-  const winners=[...document.querySelectorAll(".match")]
-    .map(m=>m.querySelector(".team.selected").textContent);
-  localStorage.setItem("wc2026_r32_winners",JSON.stringify(winners));
-  window.location.href="round16.html";
+/* BUILD ALL ROUNDS */
+buildRound("Round of 32", teams32, r16=>{
+  buildRound("Round of 16", r16, qf=>{
+    buildRound("Quarterfinals", qf, sf=>{
+      buildRound("Semifinals", sf, final=>{
+        showWinner(final);
+      });
+    });
+  });
+});
+
+/* FINAL WINNER */
+function showWinner(finalTeams){
+  const section = document.createElement("div");
+  section.className="winner";
+
+  const trophy = document.createElement("div");
+  trophy.className="trophy";
+  trophy.textContent="🏆";
+
+  const name = document.createElement("div");
+  name.className="winner-name";
+  name.textContent = "Winner: " + finalTeams[0];
+
+  section.appendChild(trophy);
+  section.appendChild(name);
+  document.getElementById("playoffs").appendChild(section);
 }
 </script>
+
 </body>
 </html>
+
