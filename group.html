@@ -121,6 +121,12 @@ button:disabled{
 </div>
 
 <script>
+  let username = localStorage.getItem("wc_username");
+if(!username){
+  username = prompt("Enter your name for leaderboard:");
+  localStorage.setItem("wc_username", username || "Anonymous Fan");
+}
+
 // GROUP DATA
 const groupsData = {
 A:["Mexico","South Africa","South Korea","Playoff D Winner"],
