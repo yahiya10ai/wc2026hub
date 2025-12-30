@@ -2,38 +2,108 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>World Cup 2026 Prediction Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WC 2026 Prediction</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-body{background:#0b0b0b;color:#fff;text-align:center;}
-.logo{font-size:2rem;color:#00ff99;margin-top:50px;font-weight:700;}
-.countdown{font-size:2rem;margin:40px 0;}
-button{padding:16px 45px;font-size:1rem;font-weight:600;background:#00ff99;color:#000;border:none;border-radius:40px;cursor:pointer;transition:0.3s;}
-button:hover{box-shadow:0 0 20px #00ff99;}
+body{
+  margin:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:radial-gradient(circle at top,#0b1d2a,#020b12);
+  color:#fff;
+  text-align:center;
+}
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+h1{
+  font-size:42px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+p{
+  max-width:600px;
+  opacity:.85;
+  font-size:18px;
+}
+.countdown{
+  display:flex;
+  gap:20px;
+  margin:30px 0;
+}
+.time{
+  background:rgba(255,255,255,.08);
+  padding:18px 22px;
+  border-radius:14px;
+  min-width:90px;
+}
+.time span{
+  display:block;
+  font-size:30px;
+  font-weight:800;
+}
+button{
+  margin-top:25px;
+  padding:16px 38px;
+  font-size:20px;
+  font-weight:800;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(90deg,#00c853,#64dd17);
+  color:#000;
+  cursor:pointer;
+  transition:.3s;
+}
+button:hover{
+  transform:scale(1.05);
+}
+footer{
+  margin-top:40px;
+  opacity:.5;
+  font-size:14px;
+}
 </style>
 </head>
+
 <body>
 
-<div class="logo">WC 2026 PREDICTION</div>
-<div class="countdown" id="countdown">Loading...</div>
-<a href="group.html"><button>Predict Now</button></a>
+<div class="hero">
+  <h1>FIFA World Cup 2026</h1>
+  <p>Predict the group stage, follow the real knockout bracket, and crown the next world champion.</p>
+
+  <div class="countdown">
+    <div class="time"><span id="d">0</span>Days</div>
+    <div class="time"><span id="h">0</span>Hours</div>
+    <div class="time"><span id="m">0</span>Minutes</div>
+    <div class="time"><span id="s">0</span>Seconds</div>
+  </div>
+
+  <button onclick="start()">Start Prediction</button>
+
+  <footer>Fan-made World Cup 2026 Prediction Platform</footer>
+</div>
 
 <script>
-// Countdown timer
-const wcStart = new Date("June 8, 2026 00:00:00").getTime();
-const countdownEl = document.getElementById("countdown");
-const timer = setInterval(()=>{
+const wcDate = new Date("June 11, 2026 00:00:00").getTime();
+
+setInterval(()=>{
   const now = new Date().getTime();
-  const diff = wcStart - now;
-  if(diff<=0){ clearInterval(timer); countdownEl.innerHTML="WC 2026 has started!"; return; }
-  const days=Math.floor(diff/(1000*60*60*24));
-  const hours=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
-  const mins=Math.floor((diff%(1000*60*60))/(1000*60));
-  const secs=Math.floor((diff%(1000*60))/1000);
-  countdownEl.innerHTML=`${days}d ${hours}h ${mins}m ${secs}s`;
+  const diff = wcDate - now;
+
+  document.getElementById("d").textContent = Math.floor(diff/(1000*60*60*24));
+  document.getElementById("h").textContent = Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+  document.getElementById("m").textContent = Math.floor((diff%(1000*60*60))/(1000*60));
+  document.getElementById("s").textContent = Math.floor((diff%(1000*60))/1000);
 },1000);
+
+function start(){
+  window.location.href="group.html";
+}
 </script>
 
 </body>
