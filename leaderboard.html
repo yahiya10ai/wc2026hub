@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Leaderboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{
+  background:#020b12;
+  color:#fff;
+  font-family:Segoe UI;
+  padding:20px;
+}
+h1{text-align:center;}
+.card{
+  max-width:600px;
+  margin:20px auto;
+  background:rgba(255,255,255,.06);
+  padding:20px;
+  border-radius:14px;
+}
+.row{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+</style>
+</head>
+<body>
+
+<h1>🏆 Leaderboard</h1>
+<div class="card" id="board"></div>
+
+<script>
+const board = document.getElementById("board");
+const data = JSON.parse(localStorage.getItem("wc_leaderboard")) || [];
+
+data.sort((a,b)=>b.points-a.points);
+
+data.forEach((u,i)=>{
+  board.innerHTML += `
+    <div class="row">
+      <span>#${i+1} ${u.name}</span>
+      <strong>${u.points} pts</strong>
+    </div>`;
+});
+</script>
+
+</body>
+</html>
